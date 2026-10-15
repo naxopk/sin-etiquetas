@@ -515,3 +515,9 @@ main + .site-foot{margin-top:32px}
   .gh-n{border-left:0;background:transparent;padding-left:7px}
   .gh:not(:has(.gh-n:not([hidden]))) > svg{margin:0 9px}
 }
+
+/* ============ ¿Por quién se hace? ============ */
+.pull{margin:24px 0 0;padding-left:18px;border-left:3px solid var(--strong-accent);font-family:var(--f-display);font-weight:750;font-stretch:104%;font-size:clamp(1.25rem,2.6vw,1.6rem);line-height:1.25;color:var(--strong-fg);text-wrap:balance}
+.manifesto{display:grid;gap:14px;font-size:1.04rem;color:var(--strong-mute);max-width:60ch}
+.manifesto p:first-child{color:var(--strong-fg);font-size:1.2rem;line-height:1.45}
+.manifesto-end{color:var(--strong-accent);font-family:var(--f-display);font-weight:800;font-stretch:108%;font-size:1.3rem}

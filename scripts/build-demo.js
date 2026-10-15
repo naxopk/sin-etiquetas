@@ -30,7 +30,7 @@ const REWRITES = [
   ['fetch(`/api/receipt', 'fetch(`api/receipt'],
   ['<a href="/api/dataset">', '<a href="resultados.html#d-int">'],
   ['href="/api/dataset"', 'href="resultados.html#d-int"'],
-  ['href="/#fiabilidad"', 'href="index.html#fiabilidad"'],
+  ['href="/#', 'href="index.html#'],
   ['href="/favicon.svg"', 'href="favicon.svg"'],
   ['fetch("/api/github")', 'fetch("api/github.json")'],
   ['[["/", "Proyecto", "home"], ["/test/", "Test", "test"], ["/resultados/", "En directo", "live"]]', '[["index.html", "Proyecto", "home"], ["test.html", "Test", "test"], ["resultados.html", "En directo", "live"]]'],
