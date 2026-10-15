@@ -10,7 +10,7 @@ const PAUSES = {
      fact:"El Congreso tiene 350 diputados, elegidos en 52 circunscripciones: las 50 provincias, Ceuta y Melilla. Para gobernar en solitario hacen falta 176.",
      tip:"Tus respuestas se guardan en este navegador. Puedes cerrar la página y seguir más tarde."},
  23:{title:"Dos tercios hechos.", body:"Quedan doce preguntas y nueve propuestas muy cortas. Después, el resultado.",
-     fact:"Cada provincia elige al menos dos diputados y el resto se reparte por población: Madrid elige 37 y Soria 2. Por eso, en las provincias pequeñas, un partido pequeño necesita muchos más votos para sacar escaño.",
+     fact:"Cada provincia elige al menos dos diputados y el resto se reparte por población: Madrid elige 38 y Soria 2. Por eso, en las provincias pequeñas, un partido pequeño necesita muchos más votos para sacar escaño.",
      tip:"Antes del resultado podrás repasar todas tus respuestas y cambiar las que quieras."}
 };
 
