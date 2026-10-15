@@ -1,0 +1,31 @@
+# Caddy sirve la web, consigue y renueva el certificado HTTPS solo, y pasa /api al servidor Node.
+# Sin registros de acceso: no guardamos IPs de visitantes.
+votasinetiquetas.es {
+	encode zstd gzip
+	root * /srv/sin-etiquetas/public
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		X-Frame-Options DENY
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+
+	@assets path /css/* /js/* /img/* /favicon.svg
+	header @assets Cache-Control "public, max-age=300"
+
+	handle /api/* {
+		reverse_proxy 127.0.0.1:3000
+	}
+
+	handle {
+		try_files {path} {path}/index.html
+		file_server
+	}
+}
+
+www.votasinetiquetas.es {
+	redir https://votasinetiquetas.es{uri} permanent
+}

@@ -1,0 +1,41 @@
+# Cada noche copia en este repositorio los días sellados, los verifica y los ancla en Bitcoin
+# con OpenTimestamps. Así existe una copia pública, fechada e independiente de la web.
+name: Publicar datos sellados
+
+on:
+  schedule:
+    - cron: "40 0 * * *"   # 30 minutos después del sellado (00:10 UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    # No hace nada hasta que exista la variable SITE_URL (es decir, hasta que la web esté publicada)
+    if: ${{ vars.SITE_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Descargar y verificar días sellados
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: node scripts/publish-day.js "$SITE_URL"
+      - name: Verificar toda la cadena
+        run: node scripts/verify.js data/days
+      - name: Sellar con OpenTimestamps
+        run: |
+          pip install --quiet opentimestamps-client
+          for f in data/seals/*.json; do
+            [ -f "$f.ots" ] || ots stamp "$f"
+          done
+      - name: Guardar en el repositorio
+        run: |
+          git config user.name "sin-etiquetas-bot"
+          git config user.email "sin-etiquetas-bot@users.noreply.github.com"
+          git add data
+          git diff --cached --quiet || git commit -m "Datos sellados del $(date -u -d yesterday +%F)"
+          git push

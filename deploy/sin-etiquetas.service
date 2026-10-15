@@ -1,0 +1,20 @@
+[Unit]
+Description=Sin Etiquetas (API)
+After=network.target postgresql.service
+
+[Service]
+User=sinetiquetas
+WorkingDirectory=/srv/sin-etiquetas
+ExecStart=/usr/bin/node server.js
+Environment=NODE_ENV=production
+Restart=always
+RestartSec=3
+# Aislamiento: el proceso no puede escribir en el sistema ni ver otros usuarios
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target
