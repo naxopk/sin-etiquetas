@@ -1,6 +1,6 @@
 /* Sin Etiquetas · lógica del test (necesita /js/shared.js cargado antes) */
 "use strict";
-const X_SVG = '<svg viewBox="0 0 20 20" width="70%" height="70%" aria-hidden="true"><path d="M3 3 L17 17 M17 3 L3 17" stroke="var(--sepia)" stroke-width="3" stroke-linecap="square"/></svg>';
+const X_SVG = '<svg viewBox="0 0 20 20" width="72%" height="72%" aria-hidden="true"><path d="M4.5 10.5 L8.5 14.5 L15.5 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const {REGIONS, PARTIES, PIDX, THEMES, TMAP, QUESTIONS, QMAP, BLIND, BUDGET, MAXPTS} = SE;
 const axisParty = SE.axisParty;
 
@@ -485,8 +485,8 @@ function renderResults(){
   // mapa de calor
   const prioIds = new Set(prioThemes.map(t=>t.id));
   const heat = `<div class="scroll"><table class="heat"><thead><tr><th class="pt">Partido</th>${THEMES.map(t=>`<th class="${prioIds.has(t.id)?"prio":""}" title="${t.name}">${t.short}</th>`).join("")}<th>Total</th></tr></thead><tbody>
-    ${R.ranked.map(r=>`<tr><td class="pt">${r.p.sig}</td>${THEMES.map(t=>{ const v=r.theme[t.id]; return v===null?`<td class="na">—</td>`:`<td style="background:color-mix(in srgb, var(--sepia) ${Math.round(Math.max(0,(v-0.35)/0.65)*70)}%, transparent)">${pct(v)}</td>`; }).join("")}<td><b>${pct(r.score)}</b></td></tr>`).join("")}
-  </tbody></table></div><p class="legend"><span>Cifras: % de coincidencia en cada tema</span><span>— = sin datos o sin respuestas</span>${prioThemes.length?"<span>En color: tus temas prioritarios</span>":""}</p>`;
+    ${R.ranked.map(r=>`<tr><td class="pt">${r.p.sig}</td>${THEMES.map(t=>{ const v=r.theme[t.id]; return v===null?`<td class="na">—</td>`:`<td style="background:color-mix(in srgb, var(--heat) ${Math.round(Math.max(0,(v-0.35)/0.65)*42)}%, transparent)">${pct(v)}</td>`; }).join("")}<td><b>${pct(r.score)}</b></td></tr>`).join("")}
+  </tbody></table></div><p class="legend"><span>Cifras: % de coincidencia en cada tema</span><span>— = sin datos o sin respuestas</span>${prioThemes.length?"<span>En negrita: tus temas prioritarios</span>":""}</p>`;
 
   // ejes
   const axes = [["econ","Economía","Más Estado","Más mercado"],["social","Sociedad y valores","Más progresista","Más conservador"],["terr","Territorio","Más autogobierno","Más centralización"]];
@@ -523,7 +523,7 @@ function renderResults(){
   const elig = R.ranked;
   const fullTable = `<div class="scroll"><table class="heat full"><thead><tr><th class="pt">Pregunta</th><th>Tú</th>${elig.map(r=>`<th>${r.p.sig}</th>`).join("")}</tr></thead><tbody>
     ${QUESTIONS.map(q=>{ const a=S.answers[q.id]; const v = a && typeof a.v==="number" ? a.v : null;
-      return `<tr><td class="q pt">${q.short}${a&&a.star?" <span class='mono'>(decisiva)</span>":""}</td><td class="you">${v===null?"—":code(q,v)}</td>${elig.map(r=>{ const s=q.p[r.i]; if(s===null) return `<td class="na">?</td>`; const ag = v===null?null:1-Math.abs(v-s)/4; return `<td ${ag!==null?`style="background:color-mix(in srgb, var(--sepia) ${Math.round(Math.max(0,(ag-0.5)/0.5)*60)}%, transparent)"`:""}>${code(q,s)}</td>`; }).join("")}</tr>`; }).join("")}
+      return `<tr><td class="q pt">${q.short}${a&&a.star?" <span class='mono'>(decisiva)</span>":""}</td><td class="you">${v===null?"—":code(q,v)}</td>${elig.map(r=>{ const s=q.p[r.i]; if(s===null) return `<td class="na">?</td>`; const ag = v===null?null:1-Math.abs(v-s)/4; return `<td ${ag!==null?`style="background:color-mix(in srgb, var(--heat) ${Math.round(Math.max(0,(ag-0.5)/0.5)*38)}%, transparent)"`:""}>${code(q,s)}</td>`; }).join("")}</tr>`; }).join("")}
   </tbody></table></div><p class="legend"><span>++ muy a favor · + a favor · · neutral · − en contra · −− muy en contra</span><span>A+/A/=/B/B+ en los dilemas</span><span>? sin posición clara</span><span>Color: más intenso cuanto más coincides</span></p>`;
 
   app.innerHTML = `
@@ -652,8 +652,8 @@ function axisSvg(ax,label,l,r,R){
   const nL = Math.max(1, lanes.length);
   const lineY = 36, H = lineY + 20 + nL*19 + 6;
   const ticks = [-1,-0.5,0,0.5,1].map(t=>`<line x1="${xOf(t)}" x2="${xOf(t)}" y1="${lineY-5}" y2="${lineY+5}" stroke="var(--ink-3)" stroke-width="1"/>`).join("");
-  const marks = pts.map(p=>{ const y = lineY+22+p.lane*19; return `<line x1="${p.x}" x2="${p.x}" y1="${lineY}" y2="${y-11}" stroke="var(--rule)" stroke-width="1"/><circle cx="${p.x}" cy="${lineY}" r="4" fill="${p.top?"var(--sepia)":"var(--ink-2)"}"/><text x="${p.x}" y="${y}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12.5" fill="${p.top?"var(--sepia-ink)":"var(--ink-2)"}" font-weight="${p.top?600:400}">${p.sig}</text>`; }).join("");
-  const you = u===null ? "" : `<g><path d="M${xOf(u)-7} ${lineY-7} L${xOf(u)+7} ${lineY+7} M${xOf(u)+7} ${lineY-7} L${xOf(u)-7} ${lineY+7}" stroke="var(--sepia)" stroke-width="3"/><text x="${xOf(u)}" y="${lineY-14}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="12.5" font-weight="600" fill="var(--sepia-ink)">TÚ</text></g>`;
+  const marks = pts.map(p=>{ const y = lineY+22+p.lane*19; return `<line x1="${p.x}" x2="${p.x}" y1="${lineY}" y2="${y-11}" stroke="var(--rule)" stroke-width="1"/><circle cx="${p.x}" cy="${lineY}" r="4" fill="${p.top?"var(--accent)":"var(--ink-2)"}"/><text x="${p.x}" y="${y}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12.5" fill="${p.top?"var(--accent-ink)":"var(--ink-2)"}" font-weight="${p.top?600:400}">${p.sig}</text>`; }).join("");
+  const you = u===null ? "" : `<g><path d="M${xOf(u)-7} ${lineY-7} L${xOf(u)+7} ${lineY+7} M${xOf(u)+7} ${lineY-7} L${xOf(u)-7} ${lineY+7}" stroke="var(--accent)" stroke-width="3"/><text x="${xOf(u)}" y="${lineY-14}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="12.5" font-weight="600" fill="var(--accent-ink)">TÚ</text></g>`;
   return `<div class="axis"><h3>${label}</h3><div class="ends"><span>← ${l}</span><span>${r} →</span></div>
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}: tu posición y la de los partidos"><line x1="${pad}" x2="${W-pad}" y1="${lineY}" y2="${lineY}" stroke="var(--ink-3)" stroke-width="1.5"/>${ticks}${marks}${you}</svg></div>`;
 }
