@@ -11,6 +11,14 @@
 - **registro verificable**: recibo por respuesta, sello diario encadenado, base de datos inmutable y datos abiertos;
 - **dashboard público en directo**, con cifras ponderadas y sin ponderar, y una ficha técnica.
 
+## Por qué existe
+
+Sin Etiquetas nace de la necesidad de contribuir, aunque sea un poco, a un país mejor. Quienes lo impulsan creen que la polarización está empobreciendo el debate: se discute sobre bandos y no sobre propuestas.
+
+El proyecto quiere que cada persona tome la decisión que quiera tomar, pero sabiendo qué defiende cada partido y sin que nadie la condicione. Tampoco este test: por eso no recomienda a quién votar, explica su método y publica sus datos.
+
+Está pensado sobre todo para la gente joven, para que use la tecnología que tiene a su alcance para informarse y luchar por un futuro mejor. Es su granito de arena.
+
 ## Estructura
 
 ```

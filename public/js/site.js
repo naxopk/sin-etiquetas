@@ -29,7 +29,7 @@
       '<div class="wrap wide foot-grid">' +
         '<div class="foot-brand"><a class="brand" href="/">' + LOGO + '<div><b>Sin Etiquetas</b><span>votasinetiquetas.es</span></div></a>' +
           "<p>Herramienta independiente, sin relación con ningún partido. Código y datos abiertos.</p></div>" +
-        '<div><h4>El proyecto</h4><a href="/">Qué es</a><a href="/#fiabilidad">Por qué es fiable</a><a href="/test/">Hacer el test</a></div>' +
+        '<div><h4>El proyecto</h4><a href="/">Qué es</a><a href="/#por-quien">Por quién se hace</a><a href="/#fiabilidad">Por qué es fiable</a><a href="/test/">Hacer el test</a></div>' +
         '<div><h4>Datos</h4><a href="/resultados/">Resultados en directo</a><a href="/resultados/#d-int">Comprobar un recibo</a><a href="/api/dataset">Datos abiertos</a><a id="ghFoot" href="https://github.com" target="_blank" rel="noopener" hidden>Código en GitHub</a></div>' +
         '<div><h4>Legal</h4><a href="/privacidad/">Privacidad</a><span>Esto no es una encuesta ni una estimación de voto.</span></div>' +
       "</div>";
