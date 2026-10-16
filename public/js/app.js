@@ -66,6 +66,7 @@ function compute(){
   const others = parties.filter(r=>!r.elig).sort((a,b)=>b.score-a.score);
   return {ans: sc.ans, tw: sc.tw, parties, ranked, others, totalW: sc.totalW};
 }
+const AXES = [["econ","Economía","Más Estado","Más mercado"],["social","Sociedad y valores","Más progresista","Más conservador"],["terr","Territorio","Más autogobierno","Más centralización"]];
 function axisUser(ans, ax){
   const xs = ans.filter(a=>a.q.ax===ax);
   if(!xs.length) return null;
@@ -490,8 +491,7 @@ function renderResults(){
   </tbody></table></div><p class="legend"><span>Cifras: % de coincidencia en cada tema</span><span>— = sin datos o sin respuestas</span>${prioThemes.length?"<span>En negrita: tus temas prioritarios</span>":""}</p>`;
 
   // ejes
-  const axes = [["econ","Economía","Más Estado","Más mercado"],["social","Sociedad y valores","Más progresista","Más conservador"],["terr","Territorio","Más autogobierno","Más centralización"]];
-  const axesHtml = axes.map(([ax,label,l,r])=>axisSvg(ax,label,l,r,R)).join("");
+  const axesHtml = AXES.map(([ax,label,l,r])=>axisSvg(ax,label,l,r,R)).join("");
 
   // matices
   const tens = tensions(R.ans);
@@ -537,9 +537,21 @@ function renderResults(){
     <details class="howto"><summary>Cómo leer este porcentaje</summary>
       <p class="small muted" style="margin-top:8px;max-width:66ch">Mide cuánto se parecen tus respuestas a las posiciones de cada partido, dando más peso a los temas a los que diste puntos y a las preguntas que marcaste como decisivas. Un 100 % sería coincidir en todo y un 0 %, estar siempre en el extremo opuesto. Un 50 % no es «la mitad de acuerdo»: significa que, de media, estáis a medio camino. Diferencias de 2 o 3 puntos son prácticamente un empate.</p>
     </details>
-    <div class="row"><button class="btn ghost" id="copy">Copiar resumen</button><button class="btn link" id="edit2">Cambiar alguna respuesta</button></div>
+    <div class="row"><button class="btn" id="shareTxt">Compartir</button><button class="btn ghost" id="copy">Copiar resumen</button><button class="btn link" id="edit2">Cambiar alguna respuesta</button></div>
     <textarea id="copybox" class="copybox" readonly hidden aria-label="Resumen para copiar"></textarea>
   </section>
+  ${window.SEShare?`<section class="sharecard" id="shareImg" aria-labelledby="shH">
+    <div class="sharecard-prev"><img id="shPrev" alt="Vista previa de la imagen con tu resultado" hidden></div>
+    <div class="sharecard-body">
+      <p class="eyebrow">Para tus historias</p>
+      <h2 id="shH">Tu resultado, en una imagen</h2>
+      <p class="small muted">Súbela a tus historias o mándala por WhatsApp. Se crea en tu navegador: no se sube a ningún sitio.</p>
+      <div class="seg" role="group" aria-label="Formato">${Object.entries(SEShare.FORMATS).map(([id,f])=>`<button class="chip" data-fmt="${id}" aria-pressed="${id===shareOpts.format}">${f.label}</button>`).join("")}</div>
+      <div class="swatches" role="group" aria-label="Color de fondo">${Object.entries(SEShare.TONES).map(([id,t])=>`<button class="sw" data-tone="${id}" style="--sw:${t.bg}" aria-pressed="${id===shareOpts.tone}" aria-label="${t.label}" title="${t.label}"></button>`).join("")}</div>
+      <div class="row"><button class="btn" id="shShare" hidden>Compartir imagen</button><button class="btn ghost" id="shSave">Descargar imagen</button></div>
+      <p class="small" id="shMsg" aria-live="polite"></p>
+    </div>
+  </section>`:""}
   <div id="donate" style="margin-top:22px"></div>
   <nav class="jump" id="jump" aria-label="En esta página"></nav>
 
@@ -620,12 +632,16 @@ function renderResults(){
   const jump=document.getElementById("jump");
   jump.innerHTML = `<span class="eyebrow">En esta página</span>` + [...app.querySelectorAll(".section[id]")].map(sec=>`<button class="chip" data-j="${sec.id}">${sec.dataset.label}</button>`).join("");
   jump.querySelectorAll("[data-j]").forEach(b=> b.onclick=()=>{ const el=document.getElementById(b.dataset.j); const d=el.querySelector("details"); if(b.dataset.j==="s-all" && d) d.open=true; el.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}); });
-  const copyText = `Mi resultado en Sin Etiquetas 29N (${n} preguntas):\n` + R.ranked.slice(0,5).map((r,k)=>`${k+1}. ${r.p.name}: ${pct(r.score)} %`).join("\n");
-  document.getElementById("copy").onclick=(e)=>{
-    const btn=e.currentTarget, box=document.getElementById("copybox");
-    const fallback=()=>{ box.hidden=false; box.value=copyText; box.focus(); box.select(); btn.textContent="Selecciona y copia el texto"; };
-    try{ navigator.clipboard.writeText(copyText).then(()=>{ btn.textContent="Copiado"; setTimeout(()=>btn.textContent="Copiar resumen",1800); }, fallback); }catch(err){ fallback(); }
+  document.getElementById("copy").onclick=(e)=>copySummary(e.currentTarget, R);
+  document.getElementById("shareTxt").onclick=async (e)=>{
+    const btn=e.currentTarget, t=shareText(R);
+    if(navigator.share){
+      try{ await navigator.share({title:"Sin Etiquetas", text:t.body, url:SITE}); return; }
+      catch(err){ if(err && err.name==="AbortError") return; }
+    }
+    copySummary(btn, R, "Copiado: pégalo donde quieras");
   };
+  renderShareImage(R);
   document.getElementById("seeParties").onclick=()=>setView("partidos");
   document.getElementById("wipe").onclick=()=>{ try{ localStorage.removeItem(KEY); }catch(e){} S=fresh(); go("intro"); };
 }
@@ -663,9 +679,94 @@ function axisSvg(ax,label,l,r,R){
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}: tu posición y la de los partidos"><line x1="${pad}" x2="${W-pad}" y1="${lineY}" y2="${lineY}" stroke="var(--ink-3)" stroke-width="1.5"/>${ticks}${marks}${you}</svg></div>`;
 }
 
+/* ---------- Compartir el resultado ----------
+   Todo se prepara en el navegador: el texto y la imagen no pasan por ningún servidor. */
+const SITE = "https://votasinetiquetas.es";
+let shareOpts = {format:"story", tone:"yel"}, shareFile = null, shareUrl = null, shareSeq = 0, shareBlackout = null;
+/* Del 24/11 al cierre de los colegios no se muestran partidos al compartir, solo temas (como en /resultados).
+   Sin respuesta de /api/config, se aplica el calendario de la ley por si acaso. */
+function isBlackout(){
+  if(CONF && CONF.blackout) return !!CONF.blackout.active;
+  const now = Date.now();
+  return now >= Date.parse("2026-11-24T00:00:00+01:00") && now < Date.parse("2026-11-29T21:00:00+01:00");
+}
+const lcFirst = s => s.charAt(0).toLowerCase()+s.slice(1);
+function topThemes(){ return THEMES.filter(t=>(S.points[t.id]||0)>0).sort((a,b)=>S.points[b.id]-S.points[a.id]).slice(0,3); }
+function shareText(R){
+  let lines;
+  if(!isBlackout()){
+    lines = ["Mi resultado en el test Sin Etiquetas para el 29N:", "", ...R.ranked.slice(0,3).map((r,k)=>`${k+1}. ${r.p.name}: ${pct(r.score)} %`), "",
+      "Es cuánto se parecen mis respuestas a lo que defiende cada partido. Sin ver siglas: solo medidas concretas."];
+  } else {
+    const ax = AXES.map(([a,label,l,r])=>{ const v=axisUser(R.ans,a); if(v===null) return null; return `${Math.abs(v)<0.2 ? "en el centro" : lcFirst(v<0?l:r)} en ${lcFirst(label)}`; }).filter(Boolean);
+    const prio = topThemes();
+    lines = ["He hecho el test Sin Etiquetas para el 29N: medidas concretas, sin ver siglas."];
+    if(prio.length || ax.length) lines.push("");
+    if(prio.length) lines.push(`Lo que más me importa: ${listJoin(prio.map(lcName))}.`);
+    if(ax.length) lines.push(`Me sitúo: ${listJoin(ax)}.`);
+  }
+  const body = lines.join("\n") + "\n\n¿Y tú? Haz el test y compara. Son 15 minutos.";
+  return {body, full: body + "\n" + SITE};
+}
+function copySummary(btn, R, done){
+  const text = shareText(R).full, box = document.getElementById("copybox");
+  const label = btn.dataset.label || (btn.dataset.label = btn.textContent);
+  const fallback = ()=>{ box.hidden=false; box.value=text; box.focus(); box.select(); btn.textContent="Selecciona y copia el texto"; };
+  try{ navigator.clipboard.writeText(text).then(()=>{ btn.textContent=done||"Copiado"; setTimeout(()=>btn.textContent=label,2200); }, fallback); }catch(err){ fallback(); }
+}
+function shareData(R){
+  return {
+    blackout: shareBlackout,
+    parties: R.ranked.slice(0,3).map(r=>({name:r.p.name, pct:pct(r.score)})),
+    themes: topThemes().map(t=>({name:t.name, pts:S.points[t.id]})),
+    budget: BUDGET,
+    axes: AXES.map(([ax,label,l,r])=>({label, l, r, v:axisUser(R.ans, ax)})).filter(a=>a.v!==null)
+  };
+}
+/* Dibuja la imagen y la deja preparada: Safari solo abre el menú de compartir si se llama justo al tocar el botón */
+async function renderShareImage(R){
+  const box = document.getElementById("shareImg"); if(!box) return;
+  R = R || compute();
+  shareBlackout = isBlackout();
+  const prev = document.getElementById("shPrev"), msg = document.getElementById("shMsg");
+  const shareBtn = document.getElementById("shShare"), saveBtn = document.getElementById("shSave");
+  box.dataset.fmt = shareOpts.format;
+  box.querySelectorAll("[data-fmt]").forEach(b=>{ b.setAttribute("aria-pressed", b.dataset.fmt===shareOpts.format); b.onclick=()=>{ shareOpts.format=b.dataset.fmt; renderShareImage(R); }; });
+  box.querySelectorAll("[data-tone]").forEach(b=>{ b.setAttribute("aria-pressed", b.dataset.tone===shareOpts.tone); b.onclick=()=>{ shareOpts.tone=b.dataset.tone; renderShareImage(R); }; });
+  shareBtn.onclick = async ()=>{
+    if(!shareFile) return;
+    try{ await navigator.share({files:[shareFile], title:"Mi resultado en el test Sin Etiquetas"}); }
+    catch(err){ if(!err || err.name!=="AbortError") downloadShare(); }
+  };
+  saveBtn.onclick = downloadShare;
+  const seq = ++shareSeq;
+  shareBtn.disabled = saveBtn.disabled = true;
+  try{
+    const canvas = await SEShare.draw(document.createElement("canvas"), shareData(R), shareOpts);
+    const blob = await SEShare.toBlob(canvas);
+    if(seq!==shareSeq || !document.body.contains(prev)) return;
+    if(shareUrl) URL.revokeObjectURL(shareUrl);
+    shareUrl = URL.createObjectURL(blob);
+    shareFile = new File([blob], `sin-etiquetas-mi-resultado-${SEShare.FORMATS[shareOpts.format].file}.png`, {type:"image/png"});
+    prev.src = shareUrl; prev.hidden = false;
+    const canFiles = !!(navigator.canShare && navigator.canShare({files:[shareFile]}));
+    shareBtn.hidden = !canFiles;
+    saveBtn.className = canFiles ? "btn ghost" : "btn";
+    shareBtn.disabled = saveBtn.disabled = false;
+    msg.className = "small"; msg.textContent = "";
+  }catch(err){
+    if(seq===shareSeq){ msg.className="small status-err"; msg.textContent="Este navegador no ha podido crear la imagen. Prueba con «Copiar resumen»."; }
+  }
+}
+function downloadShare(){
+  if(!shareUrl || !shareFile) return;
+  const a = document.createElement("a"); a.href = shareUrl; a.download = shareFile.name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
 /* ---------- Envío anónimo (solo si el servidor lo tiene activado) ---------- */
 let CONF = null, tsToken = null, tsWaiting = [];
-fetch("/api/config").then(r=>r.ok?r.json():null).then(c=>{ CONF=c; if(view==="test" && S.stage==="results") renderDonate(); }).catch(()=>{});
+fetch("/api/config").then(r=>r.ok?r.json():null).then(c=>{ CONF=c; if(view==="test" && S.stage==="results"){ renderDonate(); if(shareBlackout!==isBlackout()) renderShareImage(); } }).catch(()=>{});
 
 function loadTurnstile(cb){
   if(window.turnstile) return cb();
