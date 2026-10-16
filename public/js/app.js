@@ -540,19 +540,29 @@ function renderResults(){
     <div class="row"><button class="btn" id="shareTxt">Compartir</button><button class="btn ghost" id="copy">Copiar resumen</button><button class="btn link" id="edit2">Cambiar alguna respuesta</button></div>
     <textarea id="copybox" class="copybox" readonly hidden aria-label="Resumen para copiar"></textarea>
   </section>
-  ${window.SEShare?`<section class="sharecard" id="shareImg" aria-labelledby="shH">
-    <div class="sharecard-prev"><img id="shPrev" alt="Vista previa de la imagen con tu resultado" hidden></div>
-    <div class="sharecard-body">
-      <p class="eyebrow">Para tus historias</p>
-      <h2 id="shH">Tu resultado, en una imagen</h2>
-      <p class="small muted">Súbela a tus historias o mándala por WhatsApp. Se crea en tu navegador: no se sube a ningún sitio.</p>
-      <div class="seg" role="group" aria-label="Formato">${Object.entries(SEShare.FORMATS).map(([id,f])=>`<button class="chip" data-fmt="${id}" aria-pressed="${id===shareOpts.format}">${f.label}</button>`).join("")}</div>
-      <div class="swatches" role="group" aria-label="Color de fondo">${Object.entries(SEShare.TONES).map(([id,t])=>`<button class="sw" data-tone="${id}" style="--sw:${t.bg}" aria-pressed="${id===shareOpts.tone}" aria-label="${t.label}" title="${t.label}"></button>`).join("")}</div>
-      <div class="row"><button class="btn" id="shShare" hidden>Compartir imagen</button><button class="btn ghost" id="shSave">Descargar imagen</button></div>
-      <p class="small" id="shMsg" aria-live="polite"></p>
+  <section class="finish" id="finish" aria-labelledby="finH">
+    <div class="finish-head">
+      <p class="eyebrow">Último paso · 1 minuto</p>
+      <h2 id="finH">Haz que tu resultado cuente</h2>
+      <p>Súmalo de forma anónima a los resultados en directo y compártelo para que más gente haga el test. Cuantas más respuestas, más fiable es la foto.</p>
     </div>
-  </section>`:""}
-  <div id="donate" style="margin-top:22px"></div>
+    <div class="finish-grid">
+      <div class="finish-step" id="stepDonate"><div id="donate"></div></div>
+      ${window.SEShare?`<div class="finish-step"><section class="sharecard" id="shareImg" aria-labelledby="shH">
+        <div class="sharecard-prev"><img id="shPrev" alt="Vista previa de la imagen con tu resultado" hidden></div>
+        <div class="sharecard-body">
+          <p class="eyebrow">Para tus historias</p>
+          <h2 id="shH">Comparte tu resultado en una imagen</h2>
+          <p class="small muted">Súbela a tus historias o mándala por WhatsApp. Se crea en tu navegador: no se sube a ningún sitio.</p>
+          <div class="seg" role="group" aria-label="Formato">${Object.entries(SEShare.FORMATS).map(([id,f])=>`<button class="chip" data-fmt="${id}" aria-pressed="${id===shareOpts.format}">${f.label}</button>`).join("")}</div>
+          <div class="swatches" role="group" aria-label="Color de fondo">${Object.entries(SEShare.TONES).map(([id,t])=>`<button class="sw" data-tone="${id}" style="--sw:${t.bg}" aria-pressed="${id===shareOpts.tone}" aria-label="${t.label}" title="${t.label}"></button>`).join("")}</div>
+          <div class="row"><button class="btn" id="shShare" hidden>Compartir imagen</button><button class="btn ghost" id="shSave">Descargar imagen</button></div>
+          <p class="small" id="shMsg" aria-live="polite"></p>
+        </div>
+      </section></div>`:""}
+    </div>
+  </section>
+  <div class="finish-bar" id="finBar" hidden><p id="finBarTxt"></p><button class="btn" id="finBarGo"></button></div>
   <nav class="jump" id="jump" aria-label="En esta página"></nav>
 
   <section class="section" id="s-rank" data-label="Ranking">
@@ -642,6 +652,7 @@ function renderResults(){
     copySummary(btn, R, "Copiado: pégalo donde quieras");
   };
   renderShareImage(R);
+  watchFinish();
   document.getElementById("seeParties").onclick=()=>setView("partidos");
   document.getElementById("wipe").onclick=()=>{ try{ localStorage.removeItem(KEY); }catch(e){} S=fresh(); go("intro"); };
 }
@@ -780,26 +791,31 @@ function loadTurnstile(cb){
 
 function renderDonate(){
   const box=document.getElementById("donate"); if(!box) return;
-  if(!CONF || !CONF.submissions){ box.innerHTML=""; return; }
+  const step=document.getElementById("stepDonate");
+  if(!CONF || !CONF.submissions){ box.innerHTML=""; if(step) step.hidden=true; updateFinishBar(); return; }
+  if(step) step.hidden=false;
   if(S.receipt){
-    box.innerHTML=`<div class="donate"><p class="eyebrow">Gracias</p><h2>Tus respuestas ya forman parte del resultado colectivo</h2>
+    box.innerHTML=`<div class="donate done"><p class="eyebrow">Hecho · gracias</p><h2>Tu resultado ya cuenta</h2>
       <p class="small muted">Este es tu recibo. Con él puedes comprobar cuando quieras que tu respuesta está en el registro público y que nadie la ha cambiado. No te identifica: guárdalo si quieres hacer esa comprobación.</p>
       <p class="receipt" id="rcpt">${S.receipt}</p>
-      <div class="row"><button class="btn ghost" id="copyR">Copiar recibo</button><a class="btn link" href="/resultados/#d-int">Ver los resultados en directo y comprobarlo</a></div></div>`;
+      <div class="row">${document.getElementById("shareImg")?`<button class="btn" id="toShare">Ahora compártelo</button>`:""}<button class="btn ghost" id="copyR">Copiar recibo</button><a class="btn link" href="/resultados/#d-int">Ver los resultados en directo</a></div></div>`;
     document.getElementById("copyR").onclick=(e)=>{ const b=e.currentTarget; try{ navigator.clipboard.writeText(S.receipt).then(()=>{ b.textContent="Copiado"; }, ()=>selectText("rcpt")); }catch(err){ selectText("rcpt"); } };
+    const ts=document.getElementById("toShare"); if(ts) ts.onclick=()=>scrollToEl("shareImg");
+    updateFinishBar();
     return;
   }
   const sel=(id,label,list)=>`<label for="${id}">${label}<select id="${id}"><option value="">Prefiero no decirlo</option>${list.map(([v,l])=>`<option value="${v}">${l}</option>`).join("")}</select></label>`;
   box.innerHTML=`<form class="donate" id="donateForm" novalidate>
-    <p class="eyebrow">Opcional · anónimo</p>
-    <h2>¿Sumas tus respuestas al resultado colectivo?</h2>
+    <p class="eyebrow">Opcional · anónimo · sin registro</p>
+    <h2>Suma tu resultado a los resultados en directo</h2>
     <p class="small muted">Se envían tus respuestas, tu reparto de puntos, tu comunidad y tu resultado. Nada que te identifique: ni nombre, ni correo, ni dirección IP. Los datos se publican abiertos para que cualquiera pueda comprobar que no hay trampas. <a href="/resultados/">Ver los resultados en directo</a>.</p>
     <p class="small">Estas tres preguntas ayudan a corregir que participen más personas de unos grupos que de otros. Puedes dejarlas en blanco.</p>
     <div class="fields">${sel("dAge","Edad",SE.DEMO.age)}${sel("dSex","Sexo",SE.DEMO.sex)}${sel("dVote","¿Qué votaste en 2023?",SE.DEMO.vote23)}</div>
     <label class="consent"><input type="checkbox" id="dOk"><span>Acepto enviar mis respuestas de forma anónima para las estadísticas públicas. Entiendo que incluyen opiniones políticas y que, como no se pueden vincular a mí, después no se pueden localizar para borrarlas. <a href="/privacidad/" target="_blank" rel="noopener">Política de privacidad</a></span></label>
     <div id="ts"></div>
-    <div class="row"><button class="btn" type="submit" id="dSend">Enviar de forma anónima</button><span id="dMsg" class="small" aria-live="polite"></span></div>
+    <div class="row"><button class="btn big" type="submit" id="dSend">Sumar mi resultado (anónimo)</button><span id="dMsg" class="small" aria-live="polite"></span></div>
   </form>`;
+  updateFinishBar();
   if(CONF.turnstileSiteKey) loadTurnstile(()=>{ try{ window.turnstile.render("#ts",{sitekey:CONF.turnstileSiteKey, language:"es", callback:t=>{ tsToken=t; }, "expired-callback":()=>{ tsToken=null; }}); }catch(e){} });
   document.getElementById("donateForm").onsubmit=async (e)=>{
     e.preventDefault();
@@ -822,6 +838,27 @@ function renderDonate(){
     }catch(err){ msg.className="small status-err"; msg.textContent="Sin conexión con el servidor. Inténtalo más tarde."; }
     finally{ btn.disabled=false; }
   };
+}
+/* Barra fija con el último paso: aparece cuando el bloque «Haz que tu resultado cuente» no está en pantalla */
+function scrollToEl(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth", block:"start"}); }
+let finishObs = null, finishVisible = true;
+function updateFinishBar(){
+  const bar=document.getElementById("finBar"); if(!bar) return;
+  const canDonate = !!(CONF && CONF.submissions && !S.receipt), canShare = !!document.getElementById("shareImg");
+  if(!canDonate && !canShare){ bar.hidden=true; return; }
+  document.getElementById("finBarTxt").textContent = canDonate ? "Suma tu resultado de forma anónima y compártelo" : "Comparte tu resultado en una imagen";
+  const go=document.getElementById("finBarGo");
+  go.textContent = canDonate ? "Hacerlo ahora" : "Compartir";
+  go.onclick = ()=>scrollToEl(canDonate ? "finish" : "shareImg");
+  bar.hidden = finishVisible;
+}
+function watchFinish(){
+  const fin=document.getElementById("finish"); if(!fin) return;
+  if(finishObs) finishObs.disconnect();
+  finishVisible = true;
+  if(!("IntersectionObserver" in window)){ updateFinishBar(); return; }
+  finishObs = new IntersectionObserver(es=>{ finishVisible = es[0].isIntersecting; updateFinishBar(); }, {threshold: 0.15});
+  finishObs.observe(fin);
 }
 function selectText(id){ const el=document.getElementById(id); const r=document.createRange(); r.selectNodeContents(el); const s=getSelection(); s.removeAllRanges(); s.addRange(r); }
 
