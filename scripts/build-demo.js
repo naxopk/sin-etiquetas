@@ -14,7 +14,7 @@ const OUT = path.join(ROOT, "demo");
 const N = +process.argv[2] || 1800;
 
 const PAGES = { "index.html": "public/index.html", "test.html": "public/test/index.html", "resultados.html": "public/resultados/index.html", "privacidad.html": "public/privacidad/index.html" };
-const ASSETS = ["css/sitio.css", "css/fuentes.css", "js/shared.js", "js/app.js", "js/dashboard.js", "js/site.js", "favicon.svg", "img/logo.svg"];
+const ASSETS = ["css/sitio.css", "css/fuentes.css", "js/shared.js", "js/compartir.js", "js/app.js", "js/dashboard.js", "js/site.js", "favicon.svg", "img/logo.svg"];
 const BINARY = ["img/og.png", "img/reel-r01.webp", "fonts/inter-latin.woff2", "fonts/inter-latin-ext.woff2", "fonts/caveat-latin.woff2", "fonts/caveat-latin-ext.woff2"];
 
 const REWRITES = [
