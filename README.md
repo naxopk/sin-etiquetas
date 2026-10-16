@@ -48,7 +48,20 @@ test/              pruebas automáticas
 .github/workflows/ copia diaria de los datos en GitHub con sello de OpenTimestamps
 ```
 
-## Desplegarlo en el VPS de Hostinger (unos 30 minutos)
+## Desplegarlo en Vercel + Neon (unos 15 minutos, sin terminal)
+
+Lo que necesitas: el dominio, una cuenta de **GitHub**, una de **Vercel** y una de **Cloudflare** (las dos últimas gratis). `vercel.json` ya está preparado, con región en Fráncfort y el sellado nocturno.
+
+1. **Proyecto**: en Vercel, *Add New → Project*, importa el repositorio y pulsa *Deploy*. No hay que tocar nada del build.
+2. **Base de datos**: en el proyecto, *Storage → Create Database → Neon*, región Frankfurt, y conéctala a todos los entornos. Vercel añade `DATABASE_URL` por su cuenta. Las tablas se crean solas la primera vez que la web usa la base de datos.
+3. **Antibots**: en Cloudflare, *Turnstile → Add widget*, con tu dominio y el modo *Managed*.
+4. **Variables**: en *Settings → Environment Variables* añade `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET`, `RATE_SECRET`, `CRON_SECRET` (dos textos aleatorios largos), `PUBLISHER_NAME`, `CONTACT_EMAIL` y `REPO_URL`. Después, *Deployments → ⋯ → Redeploy* para que se apliquen.
+5. **Dominio**: en *Settings → Domains* añade `votasinetiquetas.es` y `www.votasinetiquetas.es` (que redirija al principal). Vercel te enseña los dos registros DNS exactos; ponlos en el panel del dominio y borra los de aparcamiento. El certificado HTTPS se emite solo.
+6. **Copia independiente de los datos**: en GitHub, *Settings → Secrets and variables → Actions → Variables*, crea `SITE_URL=https://votasinetiquetas.es`.
+
+Cada fusión en `main` se publica sola. El plan gratuito de Vercel pausa la web si se supera su límite de tráfico; si se hace viral, pasa al plan Pro.
+
+## Alternativa: VPS de Hostinger (unos 30 minutos)
 
 Lo que necesitas: el dominio, el VPS (KVM con **Ubuntu 24.04** y centro de datos en la Unión Europea), una cuenta de **GitHub** y una de **Cloudflare** (gratis).
 
@@ -80,10 +93,6 @@ Lo que necesitas: el dominio, el VPS (KVM con **Ubuntu 24.04** y centro de datos
 - `systemctl status sin-etiquetas` muestra el estado del servicio.
 - `journalctl -u sin-etiquetas -f` muestra los registros del servidor.
 - `journalctl -t sin-etiquetas-sello` muestra los sellados nocturnos.
-
-### Alternativa: Vercel + Neon
-
-También funciona sin cambios en Vercel. `vercel.json` ya está preparado, con región en Fráncfort y sellado nocturno. Crea el proyecto desde el repositorio y añade Neon (*Storage → Create Database*, región Frankfurt). Configura las mismas variables de `.env.example` y ejecuta `DATABASE_URL="(URL de Neon)" npm run db:init`. El plan gratuito pausa la web si se supera su límite de tráfico.
 
 ## Antes de publicar cifras
 
