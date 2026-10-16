@@ -1162,3 +1162,6 @@ body:has(#finBar:not([hidden])) footer{padding-bottom:96px}
   .finish-bar p{font-size:.84rem}
   .finish .btn.big{width:100%}
 }
+/* Los desplegables de edad, sexo y voto no deben ensanchar la tarjeta (en pantallas medianas se salían) */
+.donate label{min-width:0}
+.donate select{width:100%;min-width:0;text-overflow:ellipsis}
