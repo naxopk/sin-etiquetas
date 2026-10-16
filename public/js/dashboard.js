@@ -85,9 +85,10 @@ function render() {
       <button data-mode="weighted" aria-pressed="${mode === "weighted"}" ${W.applied ? "" : "disabled"}>Ponderado</button>
       <button data-mode="raw" aria-pressed="${mode === "raw" || !W.applied}">Sin ponderar</button></div>`;
 
-  const hero = `<section class="verdict">
+  const hero = `<section class="verdict verdict-live">
+    <img class="stk verdict-art" src="/img/ilus/urna.webp" alt="" width="640" height="640">
     <p class="eyebrow">${CONF && CONF.demo ? "Demostración · respuestas inventadas para enseñar cómo se verá" : `<span class="live" aria-hidden="true"></span>En directo · actualizado hace ${ageSec < 60 ? ageSec + " s" : Math.round(ageSec / 60) + " min"} · se renueva cada 30 s`}</p>
-    <h1>Lo que responden quienes hacen el test</h1>
+    <h1>Lo que responden <span class="mk sky">quienes hacen el test</span></h1>
     <p class="summary">Esto <b>no es una encuesta ni una estimación de voto</b>: participa quien quiere, no una muestra elegida al azar. La ponderación corrige parte de ese sesgo, pero no todo. Cada cifra se puede ver ponderada o tal cual llegó, y todos los datos se pueden descargar y comprobar.</p>
     <div class="row">${toggle}${!W.applied ? `<span class="small muted">La ponderación se activa a partir de ${num(W.minimum)} respuestas válidas.</span>` : ""}</div>
     <div class="kpis">

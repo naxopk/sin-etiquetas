@@ -20,26 +20,28 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Inter:wght@400..900&display=swap">
 <link rel="stylesheet" href="/css/sitio.css">
 </head>
 <body data-page="home">
 <header id="site-header" class="top"></header>
 
 <main class="home">
-  <section class="band hero-band">
+  <section class="band hero-band tone-yel rays">
     <div class="wrap wide">
       <div class="home-hero">
         <div class="home-hero-text">
           <p class="badge">Elecciones generales · 29 de noviembre de 2026</p>
-          <h1>Vota por lo que piensas, <em>no por quién lo dice.</em></h1>
+          <h1>Vota por lo que piensas, <em class="mk white">no por quién lo dice.</em></h1>
           <p class="lede">Un test que te compara con los partidos a partir de medidas concretas, sin enseñarte siglas. Y un experimento abierto: si quieres, tus respuestas se suman de forma anónima a unos resultados en directo que cualquiera puede comprobar.</p>
           <div class="row">
             <a class="btn" href="/test/">Hacer el test · 15 min</a>
             <a class="btn ghost" href="/resultados/">Ver los resultados en directo</a>
           </div>
+          <p class="hero-note" aria-hidden="true">sin siglas · sin trampas</p>
           <p class="small muted" id="liveCount" hidden></p>
         </div>
+        <div class="hero-art">
         <figure class="phone" aria-label="Ejemplo de pregunta del test">
           <div class="phone-screen">
             <div class="phone-status" aria-hidden="true"><span>9:41</span><span class="phone-notch"></span><span class="phone-sys"><i></i><i></i><i></i></span></div>
@@ -58,6 +60,11 @@
           </div>
           <figcaption>Sin siglas, con contexto y con el mejor argumento de cada lado.</figcaption>
         </figure>
+        <img class="stk bob runner" src="/img/ilus/runner_a.webp" alt="" width="640" height="640">
+        <img class="stk bread" src="/img/ilus/bread.webp" alt="" width="640" height="640">
+        <span class="stamp-b a" aria-hidden="true">15<small>minutos</small></span>
+        <span class="stamp-b b" aria-hidden="true">0<small>siglas</small></span>
+        </div>
       </div>
       <div class="factsrow">
         <div><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><b>36 preguntas</b><span>sin siglas ni etiquetas</span></div>
@@ -71,20 +78,21 @@
   <section class="band" id="por-que">
     <div class="wrap wide">
       <p class="eyebrow">Por qué existe</p>
-      <h2>Votar sabiendo lo que se vota</h2>
+      <h2>Votar sabiendo <span class="mk yel">lo que se vota</span></h2>
       <p class="band-sub">Tres problemas que este proyecto intenta resolver.</p>
-      <div class="home-cols">
-        <div><h3>Votamos sin saber qué se propone</h3><p>Muchas personas votan al mismo partido de siempre sin conocer su programa. Y cuando una propuesta llega con siglas, se juzga por quién la dice, no por lo que dice.</p></div>
-        <div><h3>Los tests se quedan en la superficie</h3><p>Diez frases de «sí o no» no recogen que se puede coincidir con un partido en vivienda y con otro en inmigración. Y casi nunca explican el porqué del resultado.</p></div>
-        <div><h3>Las encuestas en redes no valen</h3><p>Una encuesta viral mide a quién ha llegado el enlace, no lo que piensa la gente. Y nadie puede comprobar si se ha amañado.</p></div>
+      <div class="why">
+        <div class="card-pop pink tilt-l"><img class="stk" src="/img/ilus/shrug.webp" alt="" width="640" height="640" loading="lazy"><h3>Votamos sin saber qué se propone</h3><p>Muchas personas votan al mismo partido de siempre sin conocer su programa. Y cuando una propuesta llega con siglas, se juzga por quién la dice, no por lo que dice.</p></div>
+        <div class="card-pop sky"><img class="stk slow" src="/img/ilus/magnifier.webp" alt="" width="640" height="640" loading="lazy" style="--r:-8deg"><h3>Los tests se quedan en la superficie</h3><p>Diez frases de «sí o no» no recogen que se puede coincidir con un partido en vivienda y con otro en inmigración. Y casi nunca explican el porqué del resultado.</p></div>
+        <div class="card-pop yel tilt-r"><img class="stk" src="/img/ilus/runner_think.webp" alt="" width="640" height="640" loading="lazy"><h3>Las encuestas en redes no valen</h3><p>Una encuesta viral mide a quién ha llegado el enlace, no lo que piensa la gente. Y nadie puede comprobar si se ha amañado.</p></div>
       </div>
     </div>
   </section>
 
-  <section class="band alt" id="como">
-    <div class="wrap wide">
+  <section class="band tone-sky" id="como">
+    <div class="wrap wide band-art">
+      <img class="stk bob como-runner" src="/img/ilus/grandma.webp" alt="" width="640" height="640" loading="lazy">
       <p class="eyebrow">Cómo funciona</p>
-      <h2>Cuatro pasos, unos 15 minutos</h2>
+      <h2>Cuatro pasos, <span class="mk white">unos 15 minutos</span></h2>
       <p class="band-sub">Al final te explica con qué partido coincides más, en qué, en qué no y quién gana en los temas que más te importan.</p>
       <ol class="steps">
         <li><b>Dónde votas</b><span>10 segundos</span><p>Solo para compararte con los partidos de tu papeleta.</p></li>
@@ -97,9 +105,14 @@
 
   <section class="band" id="fiabilidad">
     <div class="wrap wide">
-      <p class="eyebrow">Fiabilidad</p>
-      <h2>Lo que hemos hecho para que los resultados sean fiables</h2>
-      <p class="band-sub">Cuatro capas: que el test no te empuje a responder por ideología, que los datos sean difíciles de manipular, que cualquiera pueda comprobarlos y que las cifras se presenten con honestidad.</p>
+      <div class="head-art">
+        <div>
+          <p class="eyebrow">Fiabilidad</p>
+          <h2>Lo que hemos hecho para que los resultados <span class="mk sky">sean fiables</span></h2>
+          <p class="band-sub">Cuatro capas: que el test no te empuje a responder por ideología, que los datos sean difíciles de manipular, que cualquiera pueda comprobarlos y que las cifras se presenten con honestidad.</p>
+        </div>
+        <img class="stk slow" src="/img/ilus/receipt.webp" alt="" width="640" height="640" loading="lazy" style="--r:8deg">
+      </div>
       <div class="pillars">
         <article class="pillar">
           <div class="pillar-head">
@@ -162,9 +175,14 @@
 
   <section class="band strong" id="verificar">
     <div class="wrap wide">
-      <p class="eyebrow">Sin confiar en nosotros</p>
-      <h2>Así se comprueba que no hay trampas</h2>
-      <p class="band-sub">No te pedimos que te fíes. Cada paso deja una prueba que puedes comprobar por tu cuenta.</p>
+      <div class="head-art">
+        <div>
+          <p class="eyebrow">Sin confiar en nosotros</p>
+          <h2>Así se comprueba que no hay trampas</h2>
+          <p class="band-sub">No te pedimos que te fíes. Cada paso deja una prueba que puedes comprobar por tu cuenta.</p>
+        </div>
+        <img class="stk verif-urna" src="/img/ilus/urna.webp" alt="" width="640" height="640" loading="lazy">
+      </div>
       <ol class="flow">
         <li><span class="mono">Paso 1</span><h3>Tu respuesta</h3><p>Llega anónima y el servidor recalcula el resultado.</p></li>
         <li><span class="mono">Paso 2</span><h3>Tu recibo</h3><p>Una huella digital única de tus respuestas. Te la quedas tú.</p></li>
@@ -176,23 +194,24 @@
     </div>
   </section>
 
-  <section class="band" id="limites">
+  <section class="band tone-pink" id="limites">
     <div class="wrap wide">
       <p class="eyebrow">Con los pies en el suelo</p>
       <h2>Lo que no es</h2>
-      <div class="home-cols" style="margin-top:24px">
-        <div><h3>No es una encuesta</h3><p>Participa quien quiere. La ponderación corrige parte del sesgo, no todo. Los resultados describen a quienes hacen el test, no a España.</p></div>
-        <div><h3>No te dice a quién votar</h3><p>Te dice con quién coincides en lo que tú consideras importante. Decidir sigue siendo cosa tuya.</p></div>
-        <div><h3>No es de ningún partido</h3><p>No recibe dinero ni instrucciones de ninguno. Las posiciones de cada partido salen de sus programas, sus votaciones y sus declaraciones, y son públicas y revisables.</p></div>
+      <div class="nots">
+        <div class="card-pop tilt-l"><h3>No es una encuesta</h3><p>Participa quien quiere. La ponderación corrige parte del sesgo, no todo. Los resultados describen a quienes hacen el test, no a España.</p></div>
+        <div class="card-pop"><h3>No te dice a quién votar</h3><p>Te dice con quién coincides en lo que tú consideras importante. Decidir sigue siendo cosa tuya.</p></div>
+        <div class="card-pop tilt-r"><h3>No es de ningún partido</h3><p>No recibe dinero ni instrucciones de ninguno. Las posiciones de cada partido salen de sus programas, sus votaciones y sus declaraciones, y son públicas y revisables.</p></div>
       </div>
     </div>
   </section>
 
-  <section class="band alt" id="privacidad">
+  <section class="band" id="privacidad">
     <div class="wrap wide two">
       <div>
+        <img class="stk priv-lock" src="/img/ilus/candado.webp" alt="" width="640" height="640" loading="lazy">
         <p class="eyebrow">Privacidad</p>
-        <h2>Tus respuestas son tuyas</h2>
+        <h2>Tus respuestas <span class="mk yel">son tuyas</span></h2>
         <ul class="gets" style="grid-template-columns:1fr;margin-top:18px">
           <li>Puedes hacer el test sin que nada salga de tu navegador.</li>
           <li>Solo se envía algo si al final lo decides tú, y sin nombre, correo ni IP.</li>
@@ -214,7 +233,7 @@
     </div>
   </section>
 
-  <section class="band" id="preguntas">
+  <section class="band tone-cream" id="preguntas">
     <div class="wrap wide two">
       <div>
         <p class="eyebrow">Preguntas frecuentes</p>
@@ -232,12 +251,13 @@
     </div>
   </section>
 
-  <section class="band alt" id="por-quien">
+  <section class="band tone-sky" id="por-quien">
     <div class="wrap wide two">
       <div>
         <p class="eyebrow">El porqué</p>
         <h2>¿Por quién se hace este proyecto?</h2>
         <blockquote class="pull">No pretende decirte a quién votar. Pretende que nadie lo decida por ti.</blockquote>
+        <img class="stk quien-art" src="/img/ilus/grandma_jump.webp" alt="" width="640" height="640" loading="lazy">
       </div>
       <div class="manifesto">
         <p>Sin Etiquetas nace de una necesidad: contribuir, aunque sea un poco, a un país mejor.</p>
@@ -258,6 +278,7 @@
           <p>Si los miras antes, es más difícil responder sin pensar en ellos.</p>
           <div class="row"><a class="btn inv" href="/test/">Hacer el test</a><a class="btn link inv" href="/resultados/">Ver los resultados</a></div>
         </div>
+        <img class="stk bob cta-runner" src="/img/ilus/runner_a.webp" alt="" width="640" height="640" loading="lazy">
       </div>
     </div>
   </section>
