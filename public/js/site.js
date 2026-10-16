@@ -23,7 +23,7 @@
         '<div class="top-actions">' +
           '<a class="gh" id="gh" href="https://github.com" target="_blank" rel="noopener" hidden aria-label="Código abierto en GitHub">' + GH +
             '<span class="gh-l">' + STAR + "Star</span>" + '<span class="gh-n" id="ghStars" hidden></span></a>' +
-          (page === "test" ? "" : '<a class="btn btn-sm top-cta" href="/test/">Hacer el test</a>') +
+          (page === "test" ? "" : '<a class="btn btn-sm top-cta" href="/test/">Haz el test</a>') +
           '<button class="menu-btn" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir el menú">' + MENU + "</button>" +
         "</div>" +
       "</div>";
@@ -42,9 +42,9 @@
     foot.innerHTML =
       '<div class="wrap wide foot-grid">' +
         '<div class="foot-brand"><a class="brand" href="/" aria-label="Sin Etiquetas, inicio">' + WORDMARK + "</a>" +
-          "<p>Herramienta independiente, sin relación con ningún partido. Código y datos abiertos.</p><span>votasinetiquetas.es</span></div>" +
-        '<div><h4>El proyecto</h4><a href="/">Qué es</a><a href="/#por-quien">Por quién se hace</a><a href="/#fiabilidad">Por qué es fiable</a><a href="/test/">Hacer el test</a></div>' +
-        '<div><h4>Datos</h4><a href="/resultados/">Resultados en directo</a><a href="/resultados/#d-int">Comprobar un recibo</a><a href="/api/dataset">Datos abiertos</a><a id="ghFoot" href="https://github.com" target="_blank" rel="noopener" hidden>Código en GitHub</a></div>' +
+          "<p>Somos independientes: sin relación con ningún partido. Código y datos abiertos.</p><span>votasinetiquetas.es</span></div>" +
+        '<div><h4>El proyecto</h4><a href="/">Qué es</a><a href="/#por-quien">Por qué lo hacemos</a><a href="/#fiabilidad">Por qué fiarte</a><a href="/test/">Haz el test</a></div>' +
+        '<div><h4>Datos</h4><a href="/resultados/">Resultados en directo</a><a href="/resultados/#d-int">Comprueba un recibo</a><a href="/api/dataset">Datos abiertos</a><a id="ghFoot" href="https://github.com" target="_blank" rel="noopener" hidden>Código en GitHub</a></div>' +
         '<div><h4>Legal</h4><a href="/privacidad/">Privacidad</a><span>Esto no es una encuesta ni una estimación de voto.</span></div>' +
       "</div>";
   }
