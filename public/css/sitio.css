@@ -1088,3 +1088,28 @@ h1,h2,h3,h4{font-weight:800;letter-spacing:-.04em}
 .phone-opts span.on::before{background:#111;border-color:#111;box-shadow:inset 0 0 0 2.5px var(--yel)}
 .phone-nav .pill{background:var(--yel);color:#111;border:1.5px solid #111;box-shadow:0 2px 0 #111;font-weight:800}
 .phone-nav .pill.ghost{background:#FFFFFF;color:#111;border-color:#111;box-shadow:none}
+
+/* Instagram: invitación a seguir la cuenta hasta el 29N */
+.ig-card,.ig-mini{--ink:#111111;--ink-2:#2E2F33;color:#111;background:var(--yel-soft);border:2px solid #111;border-radius:28px;box-shadow:0 4px 0 #111}
+.ig-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(24px,5vw,64px);align-items:center;padding:clamp(24px,5vw,52px)}
+.ig-text{display:grid;gap:14px;justify-items:start}
+.ig-text h2{margin:0;font-size:clamp(1.9rem,4.4vw,3rem)}
+.ig-text p{color:var(--ink-2);font-size:1.1rem;max-width:52ch}
+.ig-text .eyebrow{color:#111}
+.btn .ig-ico{flex:none}
+.ig-reel{position:relative;display:block;width:clamp(170px,20vw,220px);aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:6px solid #111;box-shadow:0 10px 0 rgba(17,17,17,.14);rotate:3deg;transition:rotate .2s ease,transform .2s ease}
+.ig-reel:hover{rotate:0deg;transform:translateY(-3px)}
+.ig-reel img{display:block;width:100%;height:100%;object-fit:cover}
+.ig-play{position:absolute;left:50%;top:50%;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;background:rgba(17,17,17,.78);box-shadow:0 0 0 4px rgba(255,255,255,.85)}
+.ig-play::after{content:"";position:absolute;left:24px;top:19px;border-style:solid;border-width:12px 0 12px 19px;border-color:transparent transparent transparent #FFFFFF}
+.ig-btn{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;border:2px solid var(--ink);box-shadow:0 2px 0 var(--ink);color:var(--ink);background:var(--sheet)}
+.ig-btn:hover{transform:translateY(-1px)}
+.foot-ig{display:inline-flex;align-items:center;gap:8px;margin-top:6px;font-weight:700;color:var(--ink) !important}
+.ig-mini{display:flex;gap:16px 24px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:18px 22px}
+.ig-mini h3{font-size:1.15rem;margin-bottom:4px}
+.ig-mini p{color:var(--ink-2);font-size:.95rem;max-width:56ch}
+@media (max-width:720px){
+  .ig-card{grid-template-columns:1fr}
+  .ig-reel{justify-self:center;width:200px}
+  .ig-btn{width:36px;height:36px}
+}

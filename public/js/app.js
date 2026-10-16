@@ -601,7 +601,11 @@ function renderResults(){
   </section>
 
   <section class="section" style="border-bottom:0">
-    <div class="callout"><b>Esto no es un mandato.</b> Es una comparación entre tus respuestas y nuestra lectura de lo que defiende cada partido. Antes de votar, lee al menos los capítulos de los programas de tus dos o tres primeros partidos sobre tus temas prioritarios. Los programas para el 29N se publicarán en las próximas semanas.</div>
+    <div class="ig-mini">
+      <div><h3>¿Te ha servido? Síguenos hasta el 29N</h3><p>Cada día te contamos una medida, un dato o un dilema de la campaña, sin siglas y con fuentes.</p></div>
+      <a class="btn" href="https://www.instagram.com/votasinetiquetas.es/" target="_blank" rel="noopener"><svg class="ig-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none"/></svg>@votasinetiquetas.es</a>
+    </div>
+    <div class="callout" style="margin-top:18px"><b>Esto no es un mandato.</b> Es una comparación entre tus respuestas y nuestra lectura de lo que defiende cada partido. Antes de votar, lee al menos los capítulos de los programas de tus dos o tres primeros partidos sobre tus temas prioritarios. Los programas para el 29N se publicarán en las próximas semanas.</div>
     <div class="row" style="margin-top:18px">
       <button class="btn" id="redo">Repetir el test</button>
       <button class="btn ghost" id="edit">Cambiar respuestas</button>
