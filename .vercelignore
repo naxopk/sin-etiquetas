@@ -1,0 +1,8 @@
+# En Vercel solo hacen falta public/, api/, lib/, db/ y data/. server.js es el servidor del VPS:
+# si se sube, Vercel lo toma como la aplicación entera y todas las rutas fallan.
+server.js
+deploy/
+scripts/
+test/
+demo/
+contenido/
