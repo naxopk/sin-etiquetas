@@ -1,29 +1,37 @@
 <!doctype html>
+<!-- Imagen para compartir (1200×630). Se renderiza con Chrome sin cabeza:
+     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --hide-scrollbars --window-size=1200,630 --screenshot=public/img/og.png scripts/og/og.html -->
 <html lang="es"><head><meta charset="utf-8">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=block">
+<link rel="stylesheet" href="../../public/css/fuentes.css">
 <style>
   html,body{margin:0;width:1200px;height:630px;overflow:hidden}
-  body{background:#111111;color:#F2F1ED;font-family:Inter,sans-serif;position:relative}
-  .curves{position:absolute;inset:0}
-  .wrap{position:absolute;inset:64px 72px;display:grid;grid-template-rows:auto 1fr auto}
+  body{background:#F6CF52;color:#111111;font-family:Inter,sans-serif;position:relative}
+  .rays{position:absolute;left:50%;top:50%;width:2400px;height:2400px;margin:-1200px 0 0 -1200px;opacity:.55;
+    background:repeating-conic-gradient(from 0deg,#F9DC80 0deg 7deg,transparent 7deg 18deg)}
+  .wrap{position:absolute;inset:56px 64px;display:grid;grid-template-rows:auto 1fr auto}
   .top{display:flex;justify-content:space-between;align-items:flex-start}
   .wm{display:flex;align-items:flex-start}
-  .wm b{font-weight:600;font-size:46px;line-height:.95;letter-spacing:-.045em}
-  .wm svg{width:30px;height:82px;margin:-8px 0 0 6px}
-  .badge{border:1.5px solid rgba(242,241,237,.35);border-radius:999px;padding:12px 22px;font-size:17px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:#C9C8C3}
-  h1{align-self:end;margin:0;font-weight:600;font-size:76px;line-height:1.02;letter-spacing:-.045em;max-width:980px}
-  h1 em{font-style:normal;color:#8E8D88}
-  .foot{display:flex;justify-content:space-between;margin-top:30px;font-size:22px;color:#A3A29D}
-  .foot b{color:#F2F1ED;font-weight:500}
+  .wm b{font-weight:800;font-size:40px;line-height:.95;letter-spacing:-.05em}
+  .wm svg{width:26px;height:72px;margin:-6px 0 0 6px}
+  .badge{background:#111111;color:#FFFFFF;border-radius:999px;padding:12px 22px;font-size:16px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+  h1{align-self:center;margin:0;font-weight:800;font-size:84px;line-height:.98;letter-spacing:-.055em;max-width:760px}
+  .mk{background:linear-gradient(rgba(255,255,255,.88),rgba(255,255,255,.88)) no-repeat 0 62%/100% 74%;padding:0 .12em;margin:0 -.04em;border-radius:.1em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+  .foot{display:flex;align-items:center;gap:22px;font-size:22px;font-weight:600}
+  .cta{background:#111111;color:#FFFFFF;border-radius:999px;padding:14px 26px;font-weight:800;box-shadow:0 4px 0 rgba(17,17,17,.3)}
+  .hand{font-family:Caveat,cursive;font-weight:700;font-size:34px;rotate:-4deg}
+  .art{position:absolute;right:40px;bottom:0;width:330px;filter:drop-shadow(0 10px 0 rgba(17,17,17,.12))}
+  .cal{position:absolute;right:300px;top:120px;width:150px;rotate:8deg;filter:drop-shadow(0 8px 0 rgba(17,17,17,.12))}
 </style></head>
 <body>
-  <svg class="curves" viewBox="0 0 1200 630" fill="none" stroke="#FFFFFF" stroke-opacity=".10" stroke-width="1.5"><path d="M-40 560C300 400 720 680 1240 260"/><path d="M-40 610C320 460 740 730 1240 330"/><path d="M560 -40C740 180 980 260 1240 200"/></svg>
+  <div class="rays"></div>
+  <img class="cal" src="../../public/img/ilus/calendario.webp" alt="">
+  <img class="art" src="../../public/img/ilus/chica_movil.webp" alt="">
   <div class="wrap">
     <div class="top">
-      <div class="wm"><b>Sin<br>Etiquetas</b><svg viewBox="0 0 16 34"><line x1="1.5" y1="32.5" x2="14.5" y2="1.5" stroke="#F2F1ED" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-      <div class="badge">Generales · 29 de noviembre</div>
+      <div class="wm"><b>Sin<br>Etiquetas</b><svg viewBox="0 0 16 34"><line x1="1.5" y1="32.5" x2="14.5" y2="1.5" stroke="#111111" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <div class="badge" style="margin-right:300px">Generales · 29N</div>
     </div>
-    <h1>Vota por lo que piensas, <em>no por quién lo dice.</em></h1>
-    <div class="foot"><span>Test electoral sin siglas · código y datos abiertos</span><b>votasinetiquetas.es</b></div>
+    <h1>Vota por lo que piensas, <span class="mk">no por quién lo dice.</span></h1>
+    <div class="foot"><span class="cta">Haz el test · votasinetiquetas.es</span><span class="hand">sin siglas · sin trampas</span></div>
   </div>
 </body></html>

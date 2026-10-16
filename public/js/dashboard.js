@@ -76,7 +76,7 @@ function render() {
   if (!valid) {
     root.innerHTML = `<section class="verdict"><p class="eyebrow">En directo</p><h1>Lo que responden quienes hacen el test</h1>
       <p class="summary">Todavía no hay respuestas. En cuanto alguien termine el test y decida enviar sus respuestas de forma anónima, aparecerán aquí.</p>
-      <div class="row"><a class="btn" href="/test/">Hacer el test</a></div></section>`;
+      <div class="row"><a class="btn" href="/test/">Haz el test</a></div></section>`;
     return;
   }
 
@@ -257,7 +257,7 @@ async function load() {
     if (!STATS.weighting.applied) mode = "raw";
     render(); scrollTo(0, keepScroll);
   } catch (e) {
-    if (!STATS) root.innerHTML = `<section class="verdict"><p class="eyebrow">En directo</p><h1>Lo que responden quienes hacen el test</h1><p class="summary">Los resultados no están disponibles ahora mismo. Vuelve a intentarlo en un rato.</p><div class="row"><a class="btn" href="/test/">Hacer el test</a></div></section>`;
+    if (!STATS) root.innerHTML = `<section class="verdict"><p class="eyebrow">En directo</p><h1>Lo que responden quienes hacen el test</h1><p class="summary">Los resultados no están disponibles ahora mismo. Vuelve a intentarlo en un rato.</p><div class="row"><a class="btn" href="/test/">Haz el test</a></div></section>`;
   }
 }
 try { const m = localStorage.getItem("se-mode"); if (m === "raw" || m === "weighted") mode = m; } catch (e) {}
