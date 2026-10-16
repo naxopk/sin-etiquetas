@@ -34,7 +34,7 @@ const REWRITES = [
   ['href="/favicon.svg"', 'href="favicon.svg"'],
   ['fetch("/api/github")', 'fetch("api/github.json")'],
   ['[["/", "Proyecto", "home"], ["/test/", "Test", "test"], ["/resultados/", "En directo", "live"]]', '[["index.html", "Proyecto", "home"], ["test.html", "Test", "test"], ["resultados.html", "En directo", "live"]]'],
-  ['" personas han sumado ya sus respuestas."', '" respuestas inventadas en esta demostración."'],
+  ['" personas ya han sumado sus respuestas."', '" respuestas inventadas en esta demostración."'],
 ];
 const BANNER = '<div class="demo-banner"><b>Demostración</b> · Los resultados usan respuestas inventadas y nada se envía a ningún sitio.</div>';
 
