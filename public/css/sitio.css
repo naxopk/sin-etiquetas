@@ -1032,3 +1032,47 @@ h1,h2,h3,h4{font-weight:800;letter-spacing:-.04em}
 .verdict-art{position:absolute;right:0;top:-6px;width:clamp(120px,17vw,200px);--r:6deg}
 .verdict .eyebrow{font-weight:800;color:var(--ink)}
 @media (max-width:720px){.verdict-live{padding-right:0}.verdict-art{position:static;width:120px;justify-self:end;margin-bottom:-24px}}
+
+/* =====================================================================
+   v3.1 · un punto menos de color, un punto más de seriedad
+   Colores algo menos saturados, solo dos bandas de color (portada y «¿Por quién?»),
+   tarjetas en tintes suaves, sin inclinaciones, sombras más cortas y rayos más discretos.
+   ===================================================================== */
+:root{
+  --yel:#F6CF52; --yel-2:#F9DC80; --yel-soft:#FDF3D2;
+  --pink:#EDB3CB; --pink-2:#F3C9DA; --pink-soft:#FBEAF1;
+  --sky:#A9CBE6; --sky-2:#C1DAEE; --sky-soft:#E7F0F8;
+  --green:#7DB894; --cream:#F1ECE3;
+  --pop:0 3px 0 #111111;
+}
+.tone-cream{background:var(--cream)}
+.rays::before{opacity:.55}
+.cta-dark::before{opacity:.6}
+/* Tarjetas: tintes suaves en lugar de colores plenos, sin girar */
+.card-pop{box-shadow:0 4px 0 var(--ink);border-radius:22px}
+.card-pop.pink{background:var(--pink-soft)} .card-pop.sky{background:var(--sky-soft)} .card-pop.yel{background:var(--yel-soft)}
+.tilt-l,.tilt-r,.factsrow > div:nth-child(odd),.factsrow > div:nth-child(even){rotate:0deg}
+.factsrow > div,.steps li,.faq details{box-shadow:var(--pop)}
+.pillar{box-shadow:0 4px 0 var(--ink)}
+.sheet,.donate,.hero-card{box-shadow:0 4px 0 var(--ink)}
+.btn{box-shadow:0 3px 0 #111}
+.btn:hover{box-shadow:0 5px 0 #111}
+/* Pasos e iconos en tintes suaves */
+.steps li::before{background:var(--yel-soft)}
+.steps li:nth-child(2)::before{background:var(--pink-soft)}
+.steps li:nth-child(3)::before{background:var(--sky-soft)}
+.steps li:nth-child(4)::before{background:#E4F2E9}
+.pillar .ico{background:var(--yel-soft)}
+.pillar:nth-child(2) .ico{background:var(--pink-soft)} .pillar:nth-child(3) .ico{background:var(--sky-soft)} .pillar:nth-child(4) .ico{background:#E4F2E9}
+.timeline li:nth-child(4)::before{background:var(--green)}
+.steps li:nth-child(4)::before{color:#111}
+/* Ilustraciones algo más tranquilas: hierven más despacio y sin saltos */
+.stk{animation-duration:1.1s}
+.stk.slow{animation-duration:1.5s}
+.hero-art .stamp-b.a{--bg:var(--pink)} .hero-art .stamp-b.b{--bg:var(--sky)}
+.mk.white{--mk:rgba(255,255,255,.85)}
+/* Nuevas posiciones de la portada */
+.hero-art .bread{width:34%;right:-8%;top:-4%;--r:8deg}
+.hero-art .runner{width:40%;left:-14%;bottom:-4%;--r:-3deg}
+.quien-art{width:clamp(220px,28vw,340px);--r:-2deg}
+.cta-runner{width:clamp(110px,13vw,160px);bottom:0}
