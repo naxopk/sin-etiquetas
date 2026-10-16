@@ -24,7 +24,7 @@
         }).join("") + "</nav>" +
         '<div class="top-actions">' +
           '<a class="ig-btn" href="' + IG_URL + '" target="_blank" rel="noopener" aria-label="Síguenos en Instagram, @votasinetiquetas.es">' + IG + "</a>" +
-          '<a class="gh" id="gh" href="https://github.com" target="_blank" rel="noopener" hidden aria-label="Código abierto en GitHub">' + GH +
+          '<a class="gh" id="gh" href="https://github.com/naxopk/sin-etiquetas" target="_blank" rel="noopener" aria-label="Código abierto en GitHub">' + GH +
             '<span class="gh-l">' + STAR + "Star</span>" + '<span class="gh-n" id="ghStars" hidden></span></a>' +
           (page === "test" ? "" : '<a class="btn btn-sm top-cta" href="/test/">Haz el test</a>') +
           '<button class="menu-btn" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir el menú">' + MENU + "</button>" +
@@ -48,7 +48,7 @@
           "<p>Somos independientes: sin relación con ningún partido. Código y datos abiertos.</p><span>votasinetiquetas.es</span>" +
           '<a class="foot-ig" href="' + IG_URL + '" target="_blank" rel="noopener">' + IG + "Síguenos en Instagram</a></div>" +
         '<div><h4>El proyecto</h4><a href="/">Qué es</a><a href="/#por-quien">Por qué lo hacemos</a><a href="/#fiabilidad">Por qué fiarte</a><a href="/test/">Haz el test</a></div>' +
-        '<div><h4>Datos</h4><a href="/resultados/">Resultados en directo</a><a href="/resultados/#d-int">Comprueba un recibo</a><a href="/api/dataset">Datos abiertos</a><a id="ghFoot" href="https://github.com" target="_blank" rel="noopener" hidden>Código en GitHub</a></div>' +
+        '<div><h4>Datos</h4><a href="/resultados/">Resultados en directo</a><a href="/resultados/#d-int">Comprueba un recibo</a><a href="/api/dataset">Datos abiertos</a><a id="ghFoot" href="https://github.com/naxopk/sin-etiquetas" target="_blank" rel="noopener">Código en GitHub</a></div>' +
         '<div><h4>Legal</h4><a href="/privacidad/">Privacidad</a><span>Esto no es una encuesta ni una estimación de voto.</span></div>' +
       "</div>";
   }
