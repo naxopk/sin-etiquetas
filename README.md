@@ -53,14 +53,24 @@ test/              pruebas automáticas
 Lo que necesitas: el dominio, el VPS (KVM con **Ubuntu 24.04** y centro de datos en la Unión Europea), una cuenta de **GitHub** y una de **Cloudflare** (gratis).
 
 1. **Sube el código a GitHub** en un repositorio público. Que sea público forma parte de la transparencia. Cambia `naxopk` en las insignias de arriba.
-2. **DNS**: en el panel del dominio, crea un registro `A` para `votasinetiquetas.es` y otro para `www` apuntando a la IP del VPS.
+2. **DNS**: en el panel del dominio, borra los registros de aparcamiento que traiga y crea:
+
+   | Tipo | Nombre | Valor | TTL |
+   |---|---|---|---|
+   | `A` | `@` | IPv4 del VPS | 3600 |
+   | `AAAA` | `@` | IPv6 del VPS (si tiene) | 3600 |
+   | `CNAME` | `www` | `votasinetiquetas.es` | 3600 |
+   | `CAA` | `@` | `0 issue "letsencrypt.org"` | 3600 |
+   | `CAA` | `@` | `0 issue "sectigo.com"` | 3600 |
+
+   Los `CAA` dicen quién puede emitir el certificado: Caddy usa Let's Encrypt y, si falla, ZeroSSL (Sectigo). Comprueba que ya apuntan con `dig +short votasinetiquetas.es` antes de instalar, para que Caddy consiga el certificado a la primera.
 3. **Instala** entrando por SSH como root:
    ```bash
    curl -fsSLO https://raw.githubusercontent.com/naxopk/sin-etiquetas/main/deploy/setup-vps.sh
    bash setup-vps.sh https://github.com/naxopk/sin-etiquetas.git
    ```
    El script instala Node 20, Postgres, Caddy (HTTPS automático) y el cortafuegos. También crea la base de datos con dos usuarios (uno dueño de las tablas y otro, la aplicación, con permisos mínimos), arranca el servicio y programa el sellado nocturno y una copia de seguridad diaria.
-4. **Antibots**: en Cloudflare, *Turnstile → Add widget*, con tu dominio y el modo *Managed*. Pon las dos claves en `/srv/sin-etiquetas/.env`, junto con `PUBLISHER_NAME` y `CONTACT_EMAIL`, y reinicia con `systemctl restart sin-etiquetas`.
+4. **Antibots**: en Cloudflare, *Turnstile → Add widget*, con tu dominio y el modo *Managed*. Pon las dos claves en `/srv/sin-etiquetas/.env`, junto con `PUBLISHER_NAME` y `CONTACT_EMAIL`, y reinicia con `systemctl restart sin-etiquetas`. Si falta algo, el servidor lo avisa al arrancar (`journalctl -u sin-etiquetas | grep AVISO`).
 5. **Copia independiente de los datos**: en GitHub, *Settings → Secrets and variables → Actions → Variables*, crea `SITE_URL=https://votasinetiquetas.es`. La Action se ejecutará cada noche.
 6. **Recomendado si se hace viral**: gestiona el DNS en Cloudflare con el proxy activado (nube naranja) y SSL en *Full (strict)*. Después ejecuta `bash /srv/sin-etiquetas/deploy/ufw-cloudflare.sh` y pon `TRUST_PROXY_HEADER=cf-connecting-ip` en `.env`. Cloudflare absorbe los picos de tráfico y los ataques, y el servidor solo acepta conexiones que vengan de Cloudflare.
 
@@ -80,7 +90,7 @@ También funciona sin cambios en Vercel. `vercel.json` ya está preparado, con r
 - [x] Sustituye los valores aproximados de `lib/margins.js` por datos oficiales (INE y Ministerio del Interior) y pon `APPROXIMATE = false`. Las fuentes de cada cifra están citadas en el propio fichero.
 - [ ] Revisa las posiciones de los partidos en `public/js/shared.js`. Si cambias alguna, cambia también `DATA_VERSION`.
 - [ ] Consulta con un abogado si tus estadísticas pueden considerarse un sondeo (art. 69 de la LOREG) y revisa la política de privacidad. Por defecto, los resultados por partido se ocultan del 24 de noviembre a las 00:00 al 29 de noviembre a las 21:00 (cierre en Canarias).
-- [ ] Opcional pero recomendable: sirve las fuentes tipográficas desde tu propio dominio en lugar de Google Fonts, para no enviar la IP de los visitantes a Google.
+- [x] Las fuentes (Inter y Caveat, licencia OFL) se sirven desde la propia web: ninguna visita envía su IP a Google.
 
 ## Trabajar en local
 

@@ -14,8 +14,8 @@ const OUT = path.join(ROOT, "demo");
 const N = +process.argv[2] || 1800;
 
 const PAGES = { "index.html": "public/index.html", "test.html": "public/test/index.html", "resultados.html": "public/resultados/index.html", "privacidad.html": "public/privacidad/index.html" };
-const ASSETS = ["css/sitio.css", "js/shared.js", "js/app.js", "js/dashboard.js", "js/site.js", "favicon.svg", "img/logo.svg"];
-const BINARY = ["img/og.png", "img/reel-r01.webp"];
+const ASSETS = ["css/sitio.css", "css/fuentes.css", "js/shared.js", "js/app.js", "js/dashboard.js", "js/site.js", "favicon.svg", "img/logo.svg"];
+const BINARY = ["img/og.png", "img/reel-r01.webp", "fonts/inter-latin.woff2", "fonts/inter-latin-ext.woff2", "fonts/caveat-latin.woff2", "fonts/caveat-latin-ext.woff2"];
 
 const REWRITES = [
   ['"/css/', '"css/'], ['"/js/', '"js/'], ['"/img/', '"img/'],
@@ -32,6 +32,7 @@ const REWRITES = [
   ['href="/api/dataset"', 'href="resultados.html#d-int"'],
   ['href="/#', 'href="index.html#'],
   ['href="/favicon.svg"', 'href="favicon.svg"'],
+  ['href="/fonts/', 'href="fonts/'],
   ['fetch("/api/github")', 'fetch("api/github.json")'],
   ['[["/", "Proyecto", "home"], ["/test/", "Test", "test"], ["/resultados/", "En directo", "live"]]', '[["index.html", "Proyecto", "home"], ["test.html", "Test", "test"], ["resultados.html", "En directo", "live"]]'],
   ['" personas ya han sumado sus respuestas."', '" respuestas inventadas en esta demostración."'],
@@ -49,6 +50,7 @@ function rewrite(text) {
   fs.mkdirSync(path.join(OUT, "js"), { recursive: true });
   fs.mkdirSync(path.join(OUT, "api"), { recursive: true });
   fs.mkdirSync(path.join(OUT, "img"), { recursive: true });
+  fs.mkdirSync(path.join(OUT, "fonts"), { recursive: true });
 
   for (const [dest, src] of Object.entries(PAGES)) {
     let html = rewrite(fs.readFileSync(path.join(ROOT, src), "utf8"));
