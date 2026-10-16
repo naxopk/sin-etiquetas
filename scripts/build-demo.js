@@ -18,7 +18,7 @@ const ASSETS = ["css/sitio.css", "js/shared.js", "js/app.js", "js/dashboard.js",
 const BINARY = ["img/og.png"];
 
 const REWRITES = [
-  ['"/css/', '"css/'], ['"/js/', '"js/'],
+  ['"/css/', '"css/'], ['"/js/', '"js/'], ['"/img/', '"img/'],
   ['href="/resultados/#d-int"', 'href="resultados.html#d-int"'],
   ['href="/resultados/"', 'href="resultados.html"'],
   ['href="/privacidad/"', 'href="privacidad.html"'],
@@ -63,6 +63,9 @@ function rewrite(text) {
   }
   for (const a of ASSETS) fs.writeFileSync(path.join(OUT, a), rewrite(fs.readFileSync(path.join(ROOT, "public", a), "utf8")));
   for (const a of BINARY) fs.copyFileSync(path.join(ROOT, "public", a), path.join(OUT, a));
+  // Ilustraciones de los reels que usa la web
+  fs.mkdirSync(path.join(OUT, "img", "ilus"), { recursive: true });
+  for (const f of fs.readdirSync(path.join(ROOT, "public", "img", "ilus"))) fs.copyFileSync(path.join(ROOT, "public", "img", "ilus", f), path.join(OUT, "img", "ilus", f));
   fs.writeFileSync(path.join(OUT, "api", "github.json"), JSON.stringify({ url: "https://github.com/", stars: null }));
 
   await migrate();
