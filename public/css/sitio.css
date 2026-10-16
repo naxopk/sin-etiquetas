@@ -1165,3 +1165,13 @@ body:has(#finBar:not([hidden])) footer{padding-bottom:96px}
 /* Los desplegables de edad, sexo y voto no deben ensanchar la tarjeta (en pantallas medianas se salían) */
 .donate label{min-width:0}
 .donate select{width:100%;min-width:0;text-overflow:ellipsis}
+
+/* ---------- Móvil: sin zoom accidental ----------
+   Tocar rápido un botón (por ejemplo el + de los puntos) hacía zoom por doble toque en iPhone.
+   «manipulation» quita solo ese gesto; pellizcar para ampliar sigue funcionando.
+   Y en iPhone, un campo con letra de menos de 16 px amplía la página al tocarlo. */
+html{touch-action:manipulation}
+button,a,label,select,input,textarea,summary,[role="button"],.chip,.btn,.stepper button{touch-action:manipulation}
+@media (pointer:coarse){
+  input,select,textarea{font-size:16px !important}
+}
