@@ -124,7 +124,7 @@ function renderIntro(){
   const done = answeredCount();
   app.innerHTML = `
   <section class="hero hero-card tone-yel rays">
-    <img class="stk bob test-runner" src="/img/ilus/runner_a.webp" alt="" width="640" height="640">
+    <img class="stk test-runner" src="/img/ilus/chica_movil.webp" alt="" width="640" height="640">
     <p class="eyebrow">Elecciones generales · domingo 29 de noviembre de 2026</p>
     <h1>Vota por lo que piensas, <em class="mk white">no por quién lo dice.</em></h1>
     <p class="lede">Respondes a medidas concretas sin ver siglas ni nombres. Al final te explicamos con qué partido coincides más, en qué, en qué no, y quién gana en los temas que más te importan.</p>
