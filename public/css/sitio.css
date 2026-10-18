@@ -1266,3 +1266,36 @@ button,a,label,select,input,textarea,summary,[role="button"],.chip,.btn,.stepper
   .reto-cols{grid-template-columns:1fr}
   .reto-share .row .btn{flex:1 1 auto;justify-content:center}
 }
+
+/* ---------- Juego «¿De quién es?» ---------- */
+.juego-hero h1{font-size:clamp(2.6rem,9vw,4.6rem)}
+.juego-q{display:grid;gap:6px}
+.juego-q .eyebrow{color:var(--ink);font-weight:800}
+.juego-opts .opt{flex-direction:row;align-items:center;gap:12px}
+.juego-opts .opt b{display:block;font-weight:800}
+.juego-opts .opt small{display:block;font-size:.8rem;color:var(--ink-3);font-weight:500}
+.juego-opts .opt[disabled]{cursor:default;opacity:1}
+.juego-opts .opt.right{background:#E4F2E9;border-color:#111;box-shadow:0 3px 0 #111;color:#111}
+.juego-opts .opt.right small,.juego-opts .opt.wrong small{color:#2E2F33}
+.juego-opts .opt.wrong{background:var(--pink-soft);border-color:#111;border-style:dashed;color:#111}
+.juego-reveal{margin-top:16px;border-radius:16px;padding:14px 16px;border:2px solid #111;background:#FFFFFF;color:#111;display:grid;gap:4px;animation:rise .22s ease-out}
+.juego-reveal.ok{background:#E4F2E9}
+.juego-reveal.ko{background:var(--pink-soft)}
+.juego-reveal p{font-size:.95rem;color:#2E2F33}
+.juego-reveal b{color:#111}
+.juego-verdict{font-family:var(--f-hand);font-size:1.7rem !important;font-weight:700;line-height:1;color:#111 !important}
+.juego-end{display:grid;gap:14px}
+.juego-end h1{line-height:.9}
+.juego-score{font-size:clamp(4.5rem,18vw,8rem);font-weight:800;letter-spacing:-.06em;font-variant-numeric:tabular-nums}
+.juego-end .lede{font-size:1.2rem;color:var(--ink-2);max-width:52ch}
+.juego-next{margin-top:12px;gap:10px}
+.juego-next h2{font-size:clamp(1.4rem,3.6vw,1.9rem)}
+.juego-next p{color:var(--ink-2);max-width:60ch}
+.juego-next .eyebrow{color:#111;font-weight:800}
+.juego-list-h{font-size:1.4rem;margin-top:22px}
+@media (max-width:560px){.juego-opts{grid-template-columns:1fr}}
+
+/* Entradas al juego desde la portada y el test */
+.juego-cta{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between;margin-top:28px;padding:18px 22px;background:var(--sheet);border:2px solid var(--ink);border-radius:22px;box-shadow:0 4px 0 var(--ink)}
+.juego-cta h3{font-size:1.2rem}
+.juego-cta p{color:var(--ink-2);font-size:.95rem;max-width:56ch}

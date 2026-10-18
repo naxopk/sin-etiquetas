@@ -353,9 +353,56 @@ async function drawSticker(canvas, data, opts){
   return canvas;
 }
 
+/* ---------- Tarjeta «¿Me superas?» del juego «¿De quién es?» ----------
+   Solo la nota: ni respuestas ni partidos. data: {score: 6, total: 9} */
+async function drawQuiz(canvas, data, opts){
+  const fmtD = FORMATS[opts.format] || FORMATS.story, tone = TONES[opts.tone] || TONES.pink;
+  const [mag] = await Promise.all([loadImg("magnifier"), loadFonts()]);
+  const W = fmtD.w, H = fmtD.h, sq = opts.format === "square";
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = tone.bg; ctx.fillRect(0, 0, W, H);
+  rays(ctx, W/2, H*0.5, Math.hypot(W, H), tone.ray);
+  const M = sq ? 64 : 80, top = sq ? 60 : 172;
+  wordmark(ctx, M, top, sq ? 44 : 58);
+  pill(ctx, "JUEGO · 2 MIN", W - M, top + (sq ? 38 : 50), sq ? 21 : 26, {ls:0.12, right:true});
+  // tarjeta blanca con la nota
+  const cx = sq ? 52 : 70, cy = sq ? 200 : 380, cw = W - cx*2, chh = sq ? 690 : 960;
+  ctx.fillStyle = INK; rrect(ctx, cx, cy + 14, cw, chh, 48); ctx.fill();
+  ctx.fillStyle = "#FFFFFF"; rrect(ctx, cx, cy, cw, chh, 48); ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = INK; ctx.stroke();
+  const pad = sq ? 56 : 70, x0 = cx + pad;
+  let y = cy + pad + 26;
+  eyebrow(ctx, "9 propuestas reales sin firma", x0, y, sq ? 22 : 26);
+  y += sq ? 96 : 130;
+  font(ctx, 800, sq ? 92 : 128, "", -0.055); ctx.fillStyle = INK; ctx.textAlign = "left"; ctx.fillText("¿De quién es?", x0 - 4, y);
+  const big = sq ? 290 : 400;
+  y += sq ? 290 : 400;
+  const sc = String(data.score), t = "/" + data.total;
+  font(ctx, 800, big, "", -0.06); const ws = ctx.measureText(sc).width;
+  ctx.fillText(sc, x0 - 10, y);
+  font(ctx, 800, big*0.4, "", -0.04); ctx.fillStyle = "rgba(17,17,17,.55)"; ctx.fillText(t, x0 + ws + 4, y);
+  ctx.fillStyle = INK;
+  y += sq ? 62 : 86;
+  hand(ctx, "aciertos", x0 + 6, y, sq ? 52 : 66, -3);
+  y += sq ? 104 : 150;
+  const msg = "¿Me superas?", mh = sq ? 70 : 96;
+  font(ctx, 800, mh, "", -0.05); const wm = ctx.measureText(msg).width;
+  ctx.fillStyle = tone.bg; rrect(ctx, x0 - mh*0.12, y - mh*0.76, wm + mh*0.24, mh*0.9, mh*0.12); ctx.fill();
+  ctx.fillStyle = INK; ctx.fillText(msg, x0 - 4, y);
+  sticker(ctx, mag, sq ? 790 : 730, sq ? 470 : 760, sq ? 210 : 280, 12, 1);
+  if(!sq){
+    hand(ctx, "Juega en 2 minutos →", M + 2, 1590, 58, -3);
+    pill(ctx, "votasinetiquetas.es/juego", M, 1668, 42, {shadow:true});
+  } else {
+    pill(ctx, "votasinetiquetas.es/juego", W - M, 1010, 30, {shadow:true, right:true});
+    hand(ctx, "Juega en 2 minutos →", M, 1024, 46, -3);
+  }
+  return canvas;
+}
+
 function toBlob(canvas){
   return new Promise((res, rej)=> canvas.toBlob(b=> b ? res(b) : rej(new Error("toBlob")), "image/png"));
 }
 
-root.SEShare = {TONES, FORMATS, draw, drawSticker, toBlob};
+root.SEShare = {TONES, FORMATS, draw, drawSticker, drawQuiz, toBlob};
 })(window);
