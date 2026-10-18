@@ -1235,3 +1235,34 @@ button,a,label,select,input,textarea,summary,[role="button"],.chip,.btn,.stepper
   .pegatina-body{justify-items:stretch}
   .pegatina-body .row .btn{flex:1 1 auto;justify-content:center}
 }
+
+/* ---------- Compárate con un amigo ---------- */
+.reto-banner{margin:8px 0 18px;gap:8px}
+.reto-banner h2{font-size:clamp(1.3rem,3.6vw,1.7rem)}
+.reto-banner p{color:var(--ink-2);max-width:62ch}
+.reto-banner .eyebrow,.reto-res .eyebrow,.reto-share .eyebrow{color:#111;font-weight:800}
+.reto-res{margin-top:26px;gap:12px;scroll-margin-top:84px}
+.reto-res h2{font-size:clamp(1.6rem,4.6vw,2.4rem);letter-spacing:-.04em;line-height:1.05}
+.reto-res .pct{font-variant-numeric:tabular-nums}
+.reto-res .muted{color:var(--ink-2)}
+.reto-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.reto-cols > div{background:#FFFFFF;border:2px solid #111;border-radius:16px;padding:12px 14px}
+.reto-cols h3{font-size:.98rem;margin-bottom:6px}
+.reto-cols ul{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:.92rem}
+.reto-cols li{display:flex;justify-content:space-between;gap:10px}
+.reto-cols li span{font-family:var(--f-hand);font-size:1.25rem;font-weight:700;line-height:1;white-space:nowrap}
+.reto-share{position:relative;margin-top:26px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;padding:clamp(20px,4vw,32px);background:var(--sky-soft);color:#111;--ink:#111111;--ink-2:#2E2F33;border:2px solid #111;border-radius:28px;box-shadow:0 4px 0 #111;scroll-margin-top:84px}
+.reto-share > div{display:grid;gap:12px;justify-items:start;min-width:0}
+.reto-share h2{font-size:clamp(1.5rem,4vw,2.1rem);letter-spacing:-.04em;line-height:1.05}
+.reto-share p{color:#2E2F33;max-width:58ch}
+.reto-priv{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:.9rem;color:#2E2F33}
+.reto-priv li{display:grid;grid-template-columns:16px minmax(0,1fr);gap:8px}
+.reto-priv li::before{content:"";width:10px;height:10px;border-radius:50%;background:#111;margin-top:7px}
+.reto-share .btn{gap:8px}
+.reto-art{width:clamp(130px,16vw,190px);--r:-3deg}
+@media (max-width:720px){
+  .reto-share{grid-template-columns:1fr}
+  .reto-art{display:none}
+  .reto-cols{grid-template-columns:1fr}
+  .reto-share .row .btn{flex:1 1 auto;justify-content:center}
+}
