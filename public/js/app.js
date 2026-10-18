@@ -560,6 +560,7 @@ function renderResults(){
           <p class="small" id="shMsg" aria-live="polite"></p>
         </div>
       </section></div>`:""}
+      <div class="finish-step">${pasaloHtml()}</div>
     </div>
   </section>
   <div class="finish-bar" id="finBar" hidden><p id="finBarTxt"></p><button class="btn" id="finBarGo"></button></div>
@@ -652,6 +653,7 @@ function renderResults(){
     copySummary(btn, R, "Copiado: pégalo donde quieras");
   };
   renderShareImage(R);
+  bindPasalo();
   watchFinish();
   document.getElementById("seeParties").onclick=()=>setView("partidos");
   document.getElementById("wipe").onclick=()=>{ try{ localStorage.removeItem(KEY); }catch(e){} S=fresh(); go("intro"); };
@@ -773,6 +775,58 @@ function downloadShare(){
   if(!shareUrl || !shareFile) return;
   const a = document.createElement("a"); a.href = shareUrl; a.download = shareFile.name;
   document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- Pásalo: invitar a 3 personas ----------
+   El mensaje no dice nada del resultado (ni partidos ni temas): vale también durante la veda. */
+const HOPS = Array.from({length:11}, (_,k)=>Math.pow(3,k)); // 1, 3, 9 … 59.049
+const fmtN = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "."); // 2.187 (toLocaleString no pone el punto con 4 cifras)
+const PASALO_URL = SITE + "/test/";
+const PASALO_TXT = "He hecho el test Sin Etiquetas para el 29N: 36 preguntas sobre medidas concretas, sin ver siglas, para saber con qué partido coincides de verdad. Te lo paso: hazlo tú y pásalo a 3 personas.";
+const WA_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 20.5 5 16a8.5 8.5 0 1 1 3 3z"/><path d="M9 9.5c.3 2.2 2.3 4.4 5 5l1.2-1.3 2 1-.4 1.4c-3.8.3-8.4-3.6-8.5-7.6L9.6 7l1 2z" stroke-width="1.4"/></svg>';
+const IG_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" stroke="none"/></svg>';
+const LINK_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 14.5a4 4 0 0 0 5.7 0l3.3-3.3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14.5 9.5a4 4 0 0 0-5.7 0l-3.3 3.3a4 4 0 0 0 5.7 5.7l1-1"/></svg>';
+function pasaloHtml(){
+  return `<section class="pasalo" id="pasalo" aria-labelledby="paH">
+    <div class="pasalo-head">
+      <p class="eyebrow">Pásalo</p>
+      <h2 id="paH">Mándaselo a 3 personas</h2>
+      <p class="small muted">Si cada persona se lo pasa a otras 3, y ellas a otras 3… en 10 saltos llega a <b>${fmtN(HOPS[10])} personas</b>. Así el test sale de tu círculo y la muestra se parece más a toda España.</p>
+    </div>
+    <div class="hops-wrap">
+      <ol class="hops" aria-label="Personas a las que llega en cada salto">${HOPS.slice(0,10).map((n,k)=>`<li><b>${fmtN(n)}</b></li>`).join("")}</ol>
+      <p class="hops-end"><b>${fmtN(HOPS[10])}</b><span>personas en el salto 10</span></p>
+    </div>
+    <div class="row pasalo-btns">
+      <a class="btn" id="paWa" href="https://wa.me/?text=${encodeURIComponent(PASALO_TXT+" "+PASALO_URL)}" target="_blank" rel="noopener">${WA_SVG}WhatsApp</a>
+      <button class="btn ghost" id="paIg" type="button">${IG_SVG}Instagram</button>
+      <button class="btn ghost" id="paCopy" type="button">${LINK_SVG}Copiar el enlace</button>
+    </div>
+    <p class="small" id="paMsg" aria-live="polite"></p>
+    <p class="small muted pasalo-note">El mensaje no dice nada de tu resultado: solo invita a hacer el test.</p>
+  </section>`;
+}
+function bindPasalo(){
+  const msg = document.getElementById("paMsg"); if(!msg) return;
+  const say = t => { msg.textContent = t; };
+  // Sin permiso para el portapapeles: el enlace queda seleccionado en un campo para copiarlo a mano
+  const manual = ()=>{
+    msg.innerHTML = `Copia el enlace: <input class="pasalo-url" readonly value="${PASALO_URL}" aria-label="Enlace del test">`;
+    const i = msg.querySelector("input"); i.focus(); i.select();
+  };
+  const copy = (text, ok)=>{
+    try{ navigator.clipboard.writeText(text).then(()=>say(ok), manual); }
+    catch(e){ manual(); }
+  };
+  document.getElementById("paCopy").onclick = ()=>copy(PASALO_TXT+" "+PASALO_URL, "Copiado. Pégalo en un chat o donde quieras.");
+  document.getElementById("paIg").onclick = async ()=>{
+    // En el móvil, el menú de compartir del sistema lleva a Instagram; si no hay, se copia el enlace para el sticker «Enlace»
+    if(navigator.share && matchMedia("(pointer:coarse)").matches){
+      try{ await navigator.share({title:"Sin Etiquetas", text:PASALO_TXT, url:PASALO_URL}); return; }
+      catch(err){ if(err && err.name==="AbortError") return; }
+    }
+    copy(PASALO_URL, "Enlace copiado. En Instagram, sube una historia (por ejemplo, la imagen de arriba), añade el sticker «Enlace» y pégalo.");
+  };
 }
 
 /* ---------- Envío anónimo (solo si el servidor lo tiene activado) ---------- */
