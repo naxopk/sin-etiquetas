@@ -72,6 +72,34 @@
     </div>
   </section>
 
+  <section class="band tone-cream" id="objetivos">
+    <div class="wrap wide">
+      <p class="eyebrow">Por qué hacemos esto</p>
+      <h2>Dos objetivos, <span class="mk sky">a la vista</span></h2>
+      <p class="band-sub">Este test sirve para dos cosas: una para ti y otra para todos.</p>
+      <div class="goals">
+        <article class="card-pop sky goal">
+          <img class="stk slow" src="/img/ilus/magnifier.webp" alt="" width="640" height="640" loading="lazy" style="--r:-8deg">
+          <span class="goal-n" aria-hidden="true">1</span>
+          <p class="eyebrow">Para ti</p>
+          <h3>Que decidas tu voto sabiendo</h3>
+          <p>Que sepas con qué partido coincides en lo que a ti te importa, sin siglas ni etiquetas. En qué sí, en qué no y por qué. La decisión sigue siendo tuya.</p>
+          <ul class="goal-facts"><li>36 preguntas sobre medidas concretas</li><li>Unos 15 minutos, sin registrarte</li><li>Tus respuestas no salen de tu navegador si no quieres</li></ul>
+          <div class="row"><a class="btn" href="/test/">Haz el test</a></div>
+        </article>
+        <article class="card-pop pink goal">
+          <img class="stk slow" src="/img/ilus/urna.webp" alt="" width="640" height="640" loading="lazy" style="--r:6deg">
+          <span class="goal-n" aria-hidden="true">2</span>
+          <p class="eyebrow">Para todos</p>
+          <h3>Una foto independiente de lo que piensa la gente</h3>
+          <p>Si al terminar envías tus respuestas, de forma anónima, se suman a una muestra de toda España, comunidad a comunidad. Después del 29N la pondremos al lado del resultado oficial, para ver en qué se parecen y en qué no.</p>
+          <p class="goal-note">Queremos que sea lo más representativa posible, con sus límites a la vista. Participa quien quiere, así que corregimos la muestra como las encuestas y publicamos el margen, la ficha técnica y los datos.</p>
+          <div class="row"><a class="btn ghost" href="/resultados/">Mira cómo va la muestra</a><span class="goal-count small" id="goalCount" hidden></span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <section class="band" id="por-que">
     <div class="wrap wide">
       <p class="eyebrow">Por qué existe</p>
@@ -266,7 +294,7 @@
     <div class="wrap wide two">
       <div>
         <p class="eyebrow">El porqué</p>
-        <h2>¿Por qué hacemos esto?</h2>
+        <h2>Lo que nos mueve</h2>
         <blockquote class="pull">No queremos decirte a quién votar. Queremos que nadie lo decida por ti.</blockquote>
         <img class="stk quien-art" src="/img/ilus/charla.webp" alt="" width="640" height="640" loading="lazy">
       </div>
@@ -300,9 +328,13 @@
 <script>
 fetch("/api/stats").then(function (r) { return r.ok ? r.json() : null; }).then(function (s) {
   if (!s || !s.participation || !s.participation.valid) return;
+  var n = s.participation.valid.toLocaleString("es-ES");
   var el = document.getElementById("liveCount");
-  el.textContent = s.participation.valid.toLocaleString("es-ES") + " personas ya han sumado sus respuestas.";
+  el.textContent = n + " personas ya han sumado sus respuestas.";
   el.hidden = false;
+  var g = document.getElementById("goalCount");
+  g.textContent = "Ya somos " + n + ".";
+  g.hidden = false;
 }).catch(function () {});
 </script>
 </body>

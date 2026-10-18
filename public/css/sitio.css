@@ -1175,3 +1175,21 @@ button,a,label,select,input,textarea,summary,[role="button"],.chip,.btn,.stepper
 @media (pointer:coarse){
   input,select,textarea{font-size:16px !important}
 }
+
+/* ---------- Portada: «Por qué hacemos esto», los dos objetivos ---------- */
+.goals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;margin-top:8px}
+.goal{padding-top:clamp(26px,3.4vw,34px);gap:12px}
+.goal > .stk{position:absolute;right:clamp(10px,2vw,22px);top:-44px;width:clamp(96px,11vw,128px)}
+.goal-n{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;background:#111;color:#FFFFFF;font-weight:800;font-size:1.5rem;letter-spacing:-.04em}
+.goal .eyebrow{color:#111;font-weight:800}
+.goal h3{font-size:clamp(1.45rem,2.6vw,1.85rem);line-height:1.05;max-width:16ch}
+.goal p{color:var(--ink-2)}
+.goal .goal-note{font-size:.92rem;border-left:3px solid #111;padding-left:12px}
+.goal .row{margin-top:auto;padding-top:4px}
+.goal-count{font-family:var(--f-hand);font-size:1.5rem;font-weight:700;line-height:1;color:#111}
+@media (max-width:860px){
+  .goals{grid-template-columns:1fr;gap:34px}
+}
+.goal-facts{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:.92rem;color:var(--ink-2)}
+.goal-facts li{display:grid;grid-template-columns:16px minmax(0,1fr);gap:8px}
+.goal-facts li::before{content:"";width:10px;height:10px;border-radius:50%;background:#111;margin-top:7px}
