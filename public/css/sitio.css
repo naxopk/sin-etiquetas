@@ -1313,3 +1313,47 @@ button,a,label,select,input,textarea,summary,[role="button"],.chip,.btn,.stepper
 .expres-next .eyebrow{color:#111;font-weight:800}
 .hero-live{margin-top:-6px}
 .hero-live a{color:var(--ink);font-weight:600}
+
+/* ---------- Mapa de la muestra por comunidad ---------- */
+.mapa{display:grid;gap:14px;margin-top:6px}
+.mtiles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(5,auto);gap:8px;max-width:760px}
+.mt{display:grid;gap:2px;align-content:space-between;min-height:84px;padding:9px 10px;border:2px solid var(--ink);border-radius:16px;background:var(--sheet);box-shadow:0 3px 0 var(--ink);min-width:0}
+.mt b{font-size:.8rem;line-height:1.1;letter-spacing:-.01em;overflow-wrap:anywhere}
+.mt > span{font-size:1.3rem;font-weight:800;letter-spacing:-.04em;font-variant-numeric:tabular-nums;line-height:1}
+.mt small{font-size:.72rem;font-weight:600;color:var(--ink-3);letter-spacing:0}
+.mt.l1{background:var(--sheet)}
+.mt.l2,.mlegend .l2{background:var(--sky-soft)}
+.mt.l3,.mlegend .l3{background:var(--sky)}
+.mt.l4,.mlegend .l4{background:#111;color:#FFFFFF}
+.mt.l2,.mt.l3{color:#111;--ink-3:#2E2F33}
+.mt.l4 small{color:rgba(255,255,255,.7)}
+.mt.l0{background:transparent;border-style:dashed;box-shadow:none}
+.mlegend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--ink-2)}
+.mlegend i{display:inline-block;width:14px;height:14px;border-radius:5px;border:2px solid var(--ink);margin-right:6px;vertical-align:-2px;background:var(--sheet)}
+.mlegend .l4{background:#111;border-color:#111}
+.mlist{max-width:760px}
+.mlist summary{cursor:pointer;font-weight:700;font-size:.92rem}
+.mlist table{width:100%;border-collapse:collapse;margin-top:10px;font-size:.9rem}
+.mlist th{text-align:left;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:700;padding:6px 8px 6px 0;border-bottom:2px solid var(--ink)}
+.mlist td{padding:7px 8px 7px 0;border-bottom:1px solid var(--rule-2);font-variant-numeric:tabular-nums}
+.mlist td:last-child{font-weight:700}
+.mneed{font-size:1rem;color:var(--ink-2)}
+.mneed b{color:var(--ink)}
+.mapa-note{margin:14px 0 18px}
+#muestra .head-art .stk{width:clamp(110px,13vw,160px)}
+.pasalo-region{font-family:var(--f-hand);font-size:1.35rem;font-weight:700;line-height:1.15;color:#111}
+.pasalo-region a{font-family:var(--f-body);font-size:.9rem;font-weight:600;color:#111}
+@media (max-width:560px){
+  .mtiles{gap:5px}
+  .mt{min-height:66px;padding:6px;border-radius:11px;box-shadow:0 2px 0 var(--ink)}
+  .mt b{font-size:.6rem}
+  .mt > span{font-size:1rem}
+  .mt small{display:block;font-size:.6rem}
+  .mlist table{font-size:.82rem}
+}
+.mt b .mt-s{display:none}
+.mt b span{font-size:inherit;font-weight:inherit;letter-spacing:inherit;line-height:inherit}
+@media (max-width:560px){
+  .mt b .mt-l{display:none}
+  .mt b .mt-s{display:inline;font-size:.7rem}
+}

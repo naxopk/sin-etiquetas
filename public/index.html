@@ -101,6 +101,22 @@
     </div>
   </section>
 
+  <section class="band tone-paper" id="muestra" hidden>
+    <div class="wrap wide">
+      <div class="head-art">
+        <div>
+          <p class="eyebrow">La muestra, comunidad a comunidad</p>
+          <h2>¿Cuenta <span class="mk pink">tu comunidad</span>?</h2>
+          <p class="band-sub">Para que la foto se parezca a toda España, cada comunidad necesita las respuestas que le tocan por población en una muestra de 1.000, y al menos 30. Con menos, no se puede corregir como hacen las encuestas.</p>
+        </div>
+        <img class="stk slow" src="/img/ilus/urna.webp" alt="" width="640" height="640" loading="lazy" style="--r:-6deg">
+      </div>
+      <div class="mapa" id="mapa"></div>
+      <p class="small muted mapa-note">Respuestas válidas, en directo. Si una comunidad tiene menos de 5, no damos la cifra, para no señalar a nadie.</p>
+      <div class="row"><a class="btn" href="/test/">Haz el test y suma la tuya</a><a class="btn ghost" href="/resultados/">Ver la ficha técnica</a></div>
+    </div>
+  </section>
+
   <section class="band" id="por-que">
     <div class="wrap wide">
       <p class="eyebrow">Por qué existe</p>
@@ -328,7 +344,13 @@
 
 <footer id="site-footer"></footer>
 <script src="/js/site.js"></script>
+<script src="/js/muestra.js"></script>
 <script>
+SEMuestra.load().then(function (d) {
+  if (!d || !d.rows.length) return;
+  document.getElementById("mapa").innerHTML = SEMuestra.mapHtml(d);
+  document.getElementById("muestra").hidden = false;
+});
 fetch("/api/stats").then(function (r) { return r.ok ? r.json() : null; }).then(function (s) {
   if (!s || !s.participation || !s.participation.valid) return;
   var n = s.participation.valid.toLocaleString("es-ES");
