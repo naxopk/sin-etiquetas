@@ -853,9 +853,11 @@ function renderDonate(){
     box.innerHTML=`<div class="donate done"><p class="eyebrow">Hecho · gracias</p><h2>Tu resultado ya cuenta</h2>
       <p class="small muted">Este es tu recibo. Con él puedes comprobar cuando quieras que tu respuesta está en el registro público y que nadie la ha cambiado. No te identifica: guárdalo si quieres hacer esa comprobación.</p>
       <p class="receipt" id="rcpt">${S.receipt}</p>
-      <div class="row">${document.getElementById("shareImg")?`<button class="btn" id="toShare">Ahora compártelo</button>`:""}<button class="btn ghost" id="copyR">Copiar recibo</button><a class="btn link" href="/resultados/#d-int">Ver los resultados en directo</a></div></div>`;
+      <div class="row">${document.getElementById("shareImg")?`<button class="btn" id="toShare">Ahora compártelo</button>`:""}<button class="btn ghost" id="copyR">Copiar recibo</button><a class="btn link" href="/resultados/#d-int">Ver los resultados en directo</a></div>
+      ${window.SEShare && window.crypto && crypto.subtle ? stickerHtml() : ""}</div>`;
     document.getElementById("copyR").onclick=(e)=>{ const b=e.currentTarget; try{ navigator.clipboard.writeText(S.receipt).then(()=>{ b.textContent="Copiado"; }, ()=>selectText("rcpt")); }catch(err){ selectText("rcpt"); } };
     const ts=document.getElementById("toShare"); if(ts) ts.onclick=()=>scrollToEl("shareImg");
+    renderSticker();
     updateFinishBar();
     return;
   }
@@ -864,6 +866,7 @@ function renderDonate(){
     <p class="eyebrow">Opcional · anónimo · sin registro</p>
     <h2>Suma tu resultado a los resultados en directo</h2>
     <p class="small muted">Se envían tus respuestas, tu reparto de puntos, tu comunidad y tu resultado. Nada que te identifique: ni nombre, ni correo, ni dirección IP. Los datos se publican abiertos para que cualquiera pueda comprobar que no hay trampas. <a href="/resultados/">Ver los resultados en directo</a>.</p>
+    <p class="small"><b>Al sumarte te llevas tu pegatina «He votado sin etiquetas»</b>, para compartir sin decir qué piensas.</p>
     <p class="small">Estas tres preguntas ayudan a corregir que participen más personas de unos grupos que de otros. Puedes dejarlas en blanco.</p>
     <div class="fields">${sel("dAge","Edad",SE.DEMO.age)}${sel("dSex","Sexo",SE.DEMO.sex)}${sel("dVote","¿Qué votaste en 2023?",SE.DEMO.vote23)}</div>
     <label class="consent"><input type="checkbox" id="dOk"><span>Acepto enviar mis respuestas de forma anónima para las estadísticas públicas. Entiendo que incluyen opiniones políticas y que, como no se pueden vincular a mí, después no se pueden localizar para borrarlas. <a href="/privacidad/" target="_blank" rel="noopener">Política de privacidad</a></span></label>
@@ -887,7 +890,7 @@ function renderDonate(){
     try{
       const r=await fetch("/api/submit",{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)});
       const j=await r.json().catch(()=>({}));
-      if(r.status===201){ S.receipt=j.receipt; save(); renderDonate(); return; }
+      if(r.status===201){ S.receipt=j.receipt; if(Number.isInteger(j.n)) S.participant=j.n; save(); renderDonate(); return; }
       if(r.status===409){ msg.className="small status-err"; msg.textContent="Ya se enviaron respuestas desde este navegador."; return; }
       msg.className="small status-err"; msg.textContent=j.error||"No se ha podido enviar. Inténtalo más tarde.";
       if(window.turnstile && CONF.turnstileSiteKey){ try{ window.turnstile.reset("#ts"); tsToken=null; }catch(err){} }
@@ -895,6 +898,77 @@ function renderDonate(){
     finally{ btn.disabled=false; }
   };
 }
+/* ---------- Pegatina «He votado sin etiquetas» ----------
+   El recibo completo no se pone en la imagen: está en los datos abiertos y con él cualquiera encontraría la fila
+   y vería las respuestas. Tampoco el número exacto, porque los datos abiertos van en orden de llegada.
+   La pegatina lleva el número redondeado hacia arriba y una huella dibujada con SHA-256(clave del navegador | recibo):
+   sale del recibo, pero sin la clave (que no se envía ni se publica) no se puede relacionar con ninguna fila. */
+let stickerOpts = {format:"story", tone:"sky"}, stickerFile = null, stickerUrl = null, stickerSeq = 0;
+function firstOf(n){ const step = n<=100 ? 10 : n<=1000 ? 50 : n<=10000 ? 500 : 5000; return Math.max(step, Math.ceil(n/step)*step); }
+function stickerHtml(){
+  return `<div class="pegatina" id="pegatina">
+    <div class="pegatina-prev" data-fmt="${stickerOpts.format}"><img id="pgPrev" alt="Vista previa de tu pegatina «He votado sin etiquetas»" hidden></div>
+    <div class="pegatina-body">
+      <p class="eyebrow">Tu pegatina</p>
+      <h3>He votado sin etiquetas</h3>
+      <p class="small" id="pgNum"></p>
+      <p class="small muted">Dice que has participado, no lo que piensas. Lleva tu número redondeado y una huella que sale de tu recibo y de una clave que solo está en tu navegador: nadie puede usarla para buscar tus respuestas en los datos abiertos.</p>
+      <div class="seg" role="group" aria-label="Formato de la pegatina">${Object.entries(SEShare.FORMATS).map(([id,f])=>`<button class="chip" data-pfmt="${id}" aria-pressed="${id===stickerOpts.format}">${f.label}</button>`).join("")}</div>
+      <div class="swatches" role="group" aria-label="Color de fondo de la pegatina">${Object.entries(SEShare.TONES).map(([id,t])=>`<button class="sw" data-ptone="${id}" style="--sw:${t.bg}" aria-pressed="${id===stickerOpts.tone}" aria-label="${t.label}" title="${t.label}"></button>`).join("")}</div>
+      <div class="row"><button class="btn" id="pgShare" hidden>Compartir pegatina</button><button class="btn ghost" id="pgSave">Descargar pegatina</button></div>
+      <p class="small" id="pgMsg" aria-live="polite"></p>
+    </div>
+  </div>`;
+}
+async function participantFirst(){
+  if(Number.isInteger(S.participant)) return {n:S.participant, first:firstOf(S.participant)};
+  // Envíos de antes de que el servidor diera el número: las respuestas recibidas hoy son un tope seguro
+  try{ const r = await fetch("/api/stats"); const j = r.ok ? await r.json() : null; const n = j && j.participation && j.participation.received; if(n) return {n:null, first:firstOf(n)}; }catch(e){}
+  return {n:null, first:null};
+}
+async function renderSticker(){
+  const box = document.getElementById("pegatina"); if(!box || !S.receipt) return;
+  const prev = document.getElementById("pgPrev"), msg = document.getElementById("pgMsg"), num = document.getElementById("pgNum");
+  const shareBtn = document.getElementById("pgShare"), saveBtn = document.getElementById("pgSave");
+  box.querySelector(".pegatina-prev").dataset.fmt = stickerOpts.format;
+  box.querySelectorAll("[data-pfmt]").forEach(b=>{ b.setAttribute("aria-pressed", b.dataset.pfmt===stickerOpts.format); b.onclick=()=>{ stickerOpts.format=b.dataset.pfmt; renderSticker(); }; });
+  box.querySelectorAll("[data-ptone]").forEach(b=>{ b.setAttribute("aria-pressed", b.dataset.ptone===stickerOpts.tone); b.onclick=()=>{ stickerOpts.tone=b.dataset.ptone; renderSticker(); }; });
+  shareBtn.onclick = async ()=>{
+    if(!stickerFile) return;
+    try{ await navigator.share({files:[stickerFile], title:"He votado sin etiquetas"}); }
+    catch(err){ if(!err || err.name!=="AbortError") saveSticker(); }
+  };
+  saveBtn.onclick = saveSticker;
+  const seq = ++stickerSeq;
+  shareBtn.disabled = saveBtn.disabled = true;
+  try{
+    const [p, digest] = await Promise.all([participantFirst(), crypto.subtle.digest("SHA-256", new TextEncoder().encode(S.clientId + "|pegatina|" + S.receipt))]);
+    const bytes = new Uint8Array(digest);
+    const hex = Array.from(bytes.slice(0,4), x=>x.toString(16).padStart(2,"0")).join("").toUpperCase();
+    if(!p.first) throw new Error("sin número");
+    num.innerHTML = p.n ? `Eres la persona <b>n.º ${fmtN(p.n)}</b> en sumarse. En la pegatina pone «entre las primeras ${fmtN(p.first)}».` : `En la pegatina pone «entre las primeras ${fmtN(p.first)} personas».`;
+    const canvas = await SEShare.drawSticker(document.createElement("canvas"), {first:p.first, code:hex.slice(0,4)+"·"+hex.slice(4), bytes}, stickerOpts);
+    const blob = await SEShare.toBlob(canvas);
+    if(seq!==stickerSeq || !document.body.contains(prev)) return;
+    if(stickerUrl) URL.revokeObjectURL(stickerUrl);
+    stickerUrl = URL.createObjectURL(blob);
+    stickerFile = new File([blob], `he-votado-sin-etiquetas-${SEShare.FORMATS[stickerOpts.format].file}.png`, {type:"image/png"});
+    prev.src = stickerUrl; prev.hidden = false;
+    const canFiles = !!(navigator.canShare && navigator.canShare({files:[stickerFile]}));
+    shareBtn.hidden = !canFiles;
+    saveBtn.className = canFiles ? "btn ghost" : "btn";
+    shareBtn.disabled = saveBtn.disabled = false;
+    msg.className = "small"; msg.textContent = "";
+  }catch(err){
+    if(seq===stickerSeq){ msg.className="small status-err"; msg.textContent="Ahora mismo no se puede crear la pegatina. Inténtalo dentro de un rato."; }
+  }
+}
+function saveSticker(){
+  if(!stickerUrl || !stickerFile) return;
+  const a = document.createElement("a"); a.href = stickerUrl; a.download = stickerFile.name;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
 /* Barra fija con el último paso: aparece cuando el bloque «Haz que tu resultado cuente» no está en pantalla */
 function scrollToEl(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth", block:"start"}); }
 let finishObs = null, finishVisible = true;

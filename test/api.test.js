@@ -31,12 +31,15 @@ test("flujo completo: envío, duplicado, límite, sello, recibo, datos y estadí
   const r1 = await call(submit, { method: "POST", body: payload(1) });
   assert.equal(r1.status, 201, JSON.stringify(r1.body));
   assert.match(r1.body.receipt, /^[0-9a-f]{64}$/);
+  assert.equal(r1.body.n, 1, "número de participante");
 
   const dup = await call(submit, { method: "POST", body: payload(1), headers: { "x-forwarded-for": "10.0.0.2" } });
   assert.equal(dup.status, 409);
 
   assert.equal((await call(submit, { method: "POST", body: payload(2) })).status, 201);
-  assert.equal((await call(submit, { method: "POST", body: payload(3) })).status, 201);
+  const r3 = await call(submit, { method: "POST", body: payload(3) });
+  assert.equal(r3.status, 201);
+  assert.equal(r3.body.n, 3, "el tercer envío es el participante n.º 3");
   const limited = await call(submit, { method: "POST", body: payload(5) });
   assert.equal(limited.status, 429, "el cuarto envío desde la misma conexión en una hora se rechaza (límite 3)");
 
