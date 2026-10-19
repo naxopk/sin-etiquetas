@@ -527,7 +527,7 @@ function renderResults(){
       return `<tr><td class="q pt">${q.short}${a&&a.star?" <span class='mono'>(decisiva)</span>":""}</td><td class="you">${v===null?"—":code(q,v)}</td>${elig.map(r=>{ const s=q.p[r.i]; if(s===null) return `<td class="na">?</td>`; const ag = v===null?null:1-Math.abs(v-s)/4; return `<td ${ag!==null?`style="background:color-mix(in srgb, var(--heat) ${Math.round(Math.max(0,(ag-0.5)/0.5)*38)}%, transparent)"`:""}>${code(q,s)}</td>`; }).join("")}</tr>`; }).join("")}
   </tbody></table></div><p class="legend"><span>++ muy a favor · + a favor · · neutral · − en contra · −− muy en contra</span><span>A+/A/=/B/B+ en los dilemas</span><span>? sin posición clara</span><span>Color: más intenso cuanto más coincides</span></p>`;
 
-  app.innerHTML = `
+  app.innerHTML = `${S.prueba ? `<p class="notice prueba-aviso"><b>Modo prueba:</b> respuestas al azar en ${regionName(S.region)}. No se envía nada. <button class="btn link" id="pruebaOtra" type="button">Otras respuestas al azar</button></p>` : ""}
   <section class="verdict">
     <p class="eyebrow">Tu resultado · ${n} de ${QUESTIONS.length} preguntas respondidas${S.region && S.region!=="ND" ? " · "+regionName(S.region) : ""}</p>
     <h1>El partido más cercano a tus respuestas es ${top.p.name} <span class="pct">${pct(top.score)} %</span></h1>
@@ -636,6 +636,7 @@ function renderResults(){
       <button class="btn link" id="wipe">Borrar mis respuestas de este navegador</button>
     </div>
   </section>`;
+  const po=document.getElementById("pruebaOtra"); if(po) po.onclick=()=>{ location.hash="prueba"; location.reload(); };
   document.getElementById("redo").onclick=()=>{ S=fresh(); save(); go("region"); };
   document.getElementById("edit").onclick=()=>go("review");
   document.getElementById("edit2").onclick=()=>go("review");
@@ -876,6 +877,7 @@ function renderDonate(){
     const msg=document.getElementById("dMsg"), btn=document.getElementById("dSend");
     msg.className="small";
     if(!document.getElementById("dOk").checked){ msg.className="small status-err"; msg.textContent="Marca la casilla de consentimiento para enviar."; return; }
+    if(S.prueba){ msg.className="small"; msg.textContent="Modo prueba: no se ha enviado nada."; return; }
     if(CONF.demo){ msg.className="small"; msg.textContent="Esto es una demostración: no se ha enviado nada. En la web real aquí recibirías tu recibo."; return; }
     if(CONF.turnstileSiteKey && !tsToken){ msg.className="small status-err"; msg.textContent="Espera un momento a que termine la comprobación antibots."; return; }
     btn.disabled=true; msg.textContent="Enviando…";
@@ -1017,5 +1019,17 @@ document.addEventListener("keydown", e=>{
     else if(e.key==="ArrowRight"){ const a=S.answers[q.id]; if(!(a && typeof a.v==="number")){ const cur=a||{}; cur.v=null; S.answers[q.id]=cur; save(); } nextQ(); }
   }
 });
+/* Modo prueba, para revisar los cambios sin hacer el test entero: /test/#prueba rellena el test al azar y lleva
+   al resultado. Solo funciona fuera de votasinetiquetas.es (local y versiones de prueba de Vercel) y nunca envía nada. */
+if(!/(^|\.)votasinetiquetas\.es$/.test(location.hostname) && /^#prueba/.test(location.hash)){
+  const st = fresh(), rnd = n => Math.floor(Math.random()*n);
+  st.region = REGIONS[rnd(REGIONS.length-1)][0];
+  THEMES.forEach(t=>{ st.points[t.id] = 2; });
+  QUESTIONS.forEach(q=>{ st.answers[q.id] = {v: Math.random()<0.92 ? rnd(5)-2 : null, star: Math.random()<0.1}; });
+  BLIND.forEach(b=>{ st.blind[b.id] = [1,0,-1][rnd(3)]; });
+  Object.assign(st, {prediction:"NS", completed:true, stage:"results", prueba:true, durS:900, seenHelp:true});
+  S = st; save();
+  history.replaceState(null, "", location.pathname + location.search);
+}
 const h = (location.hash||"").replace("#","");
 setView(h==="partidos" ? "partidos" : h==="metodo" ? "metodo" : "test");

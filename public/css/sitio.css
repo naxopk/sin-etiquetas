@@ -1216,3 +1216,5 @@ button,a,label,select,input,textarea,summary,[role="button"],.chip,.btn,.stepper
   .pasalo-btns .btn{flex:1 1 auto;justify-content:center}
 }
 .pasalo-url{display:block;width:100%;margin-top:6px;font:inherit;font-size:.9rem;padding:9px 12px;border:2px solid #111;border-radius:12px;background:#FFFFFF;color:#111}
+.prueba-aviso{margin-bottom:16px;border-style:dashed}
+.prueba-aviso .btn.link{padding:0 4px;font-size:inherit}
