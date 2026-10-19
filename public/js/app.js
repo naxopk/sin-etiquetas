@@ -852,6 +852,7 @@ function renderDonate(){
   if(S.receipt){
     box.innerHTML=`<div class="donate done"><p class="eyebrow">Hecho · gracias</p><h2>Tu resultado ya cuenta</h2>
       <p class="small muted">Este es tu recibo. Con él puedes comprobar cuando quieras que tu respuesta está en el registro público y que nadie la ha cambiado. No te identifica: guárdalo si quieres hacer esa comprobación.</p>
+      ${S.prueba ? `<p class="small"><b>Modo prueba:</b> el recibo y el número son inventados. No se ha enviado nada.</p>` : ""}
       <p class="receipt" id="rcpt">${S.receipt}</p>
       <div class="row">${document.getElementById("shareImg")?`<button class="btn" id="toShare">Ahora compártelo</button>`:""}<button class="btn ghost" id="copyR">Copiar recibo</button><a class="btn link" href="/resultados/#d-int">Ver los resultados en directo</a></div>
       ${window.SEShare && window.crypto && crypto.subtle ? stickerHtml() : ""}</div>`;
@@ -880,7 +881,8 @@ function renderDonate(){
     const msg=document.getElementById("dMsg"), btn=document.getElementById("dSend");
     msg.className="small";
     if(!document.getElementById("dOk").checked){ msg.className="small status-err"; msg.textContent="Marca la casilla de consentimiento para enviar."; return; }
-    if(S.prueba){ msg.className="small"; msg.textContent="Modo prueba: no se ha enviado nada."; return; }
+    // Modo prueba: un envío simulado, con recibo y número inventados, para ver la pegatina sin tocar la muestra
+    if(S.prueba){ S.receipt = (newClientId() + newClientId()).slice(0,64); S.participant = 100 + Math.floor(Math.random()*90); save(); renderDonate(); return; }
     if(CONF.demo){ msg.className="small"; msg.textContent="Esto es una demostración: no se ha enviado nada. En la web real aquí recibirías tu recibo."; return; }
     if(CONF.turnstileSiteKey && !tsToken){ msg.className="small status-err"; msg.textContent="Espera un momento a que termine la comprobación antibots."; return; }
     btn.disabled=true; msg.textContent="Enviando…";
