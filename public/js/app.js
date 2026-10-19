@@ -24,6 +24,29 @@ let view = "test";
 let partyFilter = "all";
 let S = load() || fresh();
 
+/* «Compárate con un amigo»: el código llega en /test/#reto=… y se guarda aparte, sin tocar el estado del test.
+   Se quita de la barra de direcciones en cuanto se lee, para que no se reenvíe sin querer. */
+const RETO_KEY = "sinetiquetas-29n-reto";
+let RETO = null;
+try{ const c = localStorage.getItem(RETO_KEY); const a = c && window.SEReto ? SEReto.decode(c) : null; if(a) RETO = {code:c, answers:a}; }catch(e){}
+(function(){
+  const m = (location.hash||"").match(/^#reto=([A-Za-z0-9_-]{1,64})/);
+  if(!m || !window.SEReto) return;
+  // …#reto=código&prueba deja el modo prueba para después, para ver la comparación sin hacer el test entero
+  history.replaceState(null, "", location.pathname + location.search + (/&prueba\b/.test(location.hash) ? "#prueba" : ""));
+  const a = SEReto.decode(m[1]);
+  if(!a){ RETO = {broken:true}; return; }
+  try{ localStorage.setItem(RETO_KEY, m[1]); }catch(e){}
+  RETO = {code:m[1], answers:a, fresh:true};
+})();
+function retoBanner(){
+  if(!RETO) return "";
+  if(RETO.broken) return `<div class="notice" style="margin-bottom:16px"><b>El enlace para compararte no funciona.</b> Puede que se haya cortado al copiarlo o que sea de una versión anterior del test. Puedes hacer el test igualmente.</div>`;
+  return `<section class="reto-banner card-pop pink"><p class="eyebrow">Te han retado</p>
+    <h2>${S.completed ? "Ya puedes ver cuánto coincidís" : "Haz el test y descubre cuánto coincidís"}</h2>
+    <p>${S.completed ? "Ya has hecho el test: la comparación está en tu resultado." : "Alguien te ha mandado su enlace. Al terminar verás en qué porcentaje coincidís y en qué temas os separáis."} Sus respuestas no se ven: solo la comparación.</p></section>`;
+}
+
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 function makeOrder(){
   // Mezcla las preguntas evitando dos del mismo tema seguidas
@@ -123,7 +146,7 @@ function render(){
 function renderIntro(){
   const prog = hasProgress();
   const done = answeredCount();
-  app.innerHTML = `
+  app.innerHTML = `${retoBanner()}
   <section class="hero hero-card tone-yel rays">
     <img class="stk test-runner" src="/img/ilus/chica_movil.webp" alt="" width="640" height="640">
     <p class="eyebrow">Elecciones generales · domingo 29 de noviembre de 2026</p>
@@ -540,6 +563,7 @@ function renderResults(){
     <div class="row"><button class="btn" id="shareTxt">Compartir</button><button class="btn ghost" id="copy">Copiar resumen</button><button class="btn link" id="edit2">Cambiar alguna respuesta</button></div>
     <textarea id="copybox" class="copybox" readonly hidden aria-label="Resumen para copiar"></textarea>
   </section>
+  ${retoResultHtml()}
   <section class="finish" id="finish" aria-labelledby="finH">
     <div class="finish-head">
       <p class="eyebrow">Último paso · 1 minuto</p>
@@ -563,6 +587,7 @@ function renderResults(){
       <div class="finish-step">${pasaloHtml()}</div>
     </div>
   </section>
+  ${window.SEReto ? retoShareHtml() : ""}
   <div class="finish-bar" id="finBar" hidden><p id="finBarTxt"></p><button class="btn" id="finBarGo"></button></div>
   <nav class="jump" id="jump" aria-label="En esta página"></nav>
 
@@ -655,6 +680,7 @@ function renderResults(){
   };
   renderShareImage(R);
   bindPasalo();
+  bindReto();
   watchFinish();
   document.getElementById("seeParties").onclick=()=>setView("partidos");
   document.getElementById("wipe").onclick=()=>{ try{ localStorage.removeItem(KEY); }catch(e){} S=fresh(); go("intro"); };
@@ -827,6 +853,58 @@ function bindPasalo(){
       catch(err){ if(err && err.name==="AbortError") return; }
     }
     copy(PASALO_URL, "Enlace copiado. En Instagram, sube una historia (por ejemplo, la imagen de arriba), añade el sticker «Enlace» y pégalo.");
+  };
+}
+
+/* ---------- Compárate con un amigo ---------- */
+const near = v => v>=0.8 ? "muy cerca" : v>=0.6 ? "cerca" : v>=0.4 ? "a medio camino" : "lejos";
+function retoResultHtml(){
+  if(!RETO || RETO.broken || !window.SEReto) return "";
+  const c = SEReto.compare(S.answers, RETO.answers);
+  const own = c.enough && c.score===1 && QUESTIONS.every(q=>{ const a=S.answers[q.id]; return (a && typeof a.v==="number" ? a.v : null)===RETO.answers[q.id]; });
+  let body;
+  if(own) body = `<h2>Este enlace es el tuyo</h2><p class="small muted">Has abierto tu propio enlace, así que coincidís en todo. Mándaselo a otra persona para compararte con ella.</p>`;
+  else if(!c.enough) body = `<h2>Tenéis pocas preguntas en común</h2><p class="small muted">Solo habéis respondido las dos ${c.n} preguntas, y hacen falta ${SEReto.MIN_COMMON} para que la comparación diga algo. Responde alguna más de las que saltaste.</p>`;
+  else {
+    const top = c.themes.slice(0,2), low = c.themes.length>3 ? c.themes.slice(-2).reverse() : [];
+    const li = t => `<li><b>${t.name}</b><span>${near(t.score)}</span></li>`;
+    body = `<h2>Coincidís en un <span class="pct">${pct(c.score)} %</span></h2>
+      <p class="small muted">Con las ${c.n} preguntas que habéis respondido las dos, con la misma fórmula que con los partidos. Sus respuestas no se ven: solo la comparación.</p>
+      ${top.length ? `<div class="reto-cols"><div><h3>Donde más cerca estáis</h3><ul>${top.map(li).join("")}</ul></div>${low.length ? `<div><h3>Donde más os separáis</h3><ul>${low.map(li).join("")}</ul></div>` : ""}</div>` : ""}`;
+  }
+  return `<section class="reto-res card-pop pink" id="retoRes" aria-label="Comparación con quien te mandó el enlace">
+    <p class="eyebrow">Tú y quien te mandó el enlace</p>${body}
+    <div class="row"><button class="btn" id="retoGo" type="button">Ahora compárate con otra persona</button><button class="btn link" id="retoClear" type="button">Quitar esta comparación</button></div>
+  </section>`;
+}
+function retoShareHtml(){
+  return `<section class="reto-share" id="reto" aria-labelledby="reH">
+    <div><p class="eyebrow">Compárate con un amigo</p>
+      <h2 id="reH">¿Cuánto coincides con tu gente?</h2>
+      <p>Manda tu enlace. Quien lo abra hace el test y, al terminar, ve en qué porcentaje coincidís y en qué temas os separáis.</p>
+      <ul class="reto-priv">
+        <li>Tus respuestas van solo dentro del enlace: no pasan por nuestro servidor ni se guardan en ninguna base de datos.</li>
+        <li>Quien lo abra no ve tus respuestas, solo la comparación.</li>
+        <li>Sirve a cualquiera que tenga el enlace: mándalo solo a quien quieras.</li>
+      </ul>
+      <div class="row"><a class="btn" id="reWa" href="#" target="_blank" rel="noopener">${WA_SVG}WhatsApp</a><button class="btn ghost" id="reShare" type="button" hidden>Compartir</button><button class="btn ghost" id="reCopy" type="button">${LINK_SVG}Copiar el enlace</button></div>
+      <p class="small" id="reMsg" aria-live="polite"></p>
+    </div>
+    <img class="stk reto-art" src="/img/ilus/charla.webp" alt="" width="640" height="640">
+  </section>`;
+}
+function bindReto(){
+  const go = document.getElementById("retoGo"); if(go) go.onclick = ()=>scrollToEl("reto");
+  const cl = document.getElementById("retoClear"); if(cl) cl.onclick = ()=>{ try{ localStorage.removeItem(RETO_KEY); }catch(e){} RETO = null; const el = document.getElementById("retoRes"); if(el) el.remove(); };
+  const msg = document.getElementById("reMsg"); if(!msg) return;
+  const url = SITE + "/test/#reto=" + SEReto.encode(S.answers);
+  const txt = "He hecho el test Sin Etiquetas para el 29N. ¿Cuánto coincidimos tú y yo? Hazlo con este enlace y al final lo verás (mis respuestas no se ven):";
+  document.getElementById("reWa").href = "https://wa.me/?text=" + encodeURIComponent(txt + " " + url);
+  const sh = document.getElementById("reShare");
+  if(navigator.share){ sh.hidden = false; sh.onclick = async ()=>{ try{ await navigator.share({title:"¿Cuánto coincidimos?", text:txt, url}); }catch(err){} }; }
+  const manual = ()=>{ msg.innerHTML = `Copia el enlace: <input class="pasalo-url" readonly aria-label="Tu enlace para compararte">`; const i = msg.querySelector("input"); i.value = url; i.focus(); i.select(); };
+  document.getElementById("reCopy").onclick = ()=>{
+    try{ navigator.clipboard.writeText(txt + " " + url).then(()=>{ msg.textContent = "Copiado. Pégalo en un chat."; }, manual); }catch(e){ manual(); }
   };
 }
 
