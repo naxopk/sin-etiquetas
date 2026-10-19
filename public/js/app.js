@@ -32,7 +32,8 @@ try{ const c = localStorage.getItem(RETO_KEY); const a = c && window.SEReto ? SE
 (function(){
   const m = (location.hash||"").match(/^#reto=([A-Za-z0-9_-]{1,64})/);
   if(!m || !window.SEReto) return;
-  history.replaceState(null, "", location.pathname + location.search);
+  // …#reto=código&prueba deja el modo prueba para después, para ver la comparación sin hacer el test entero
+  history.replaceState(null, "", location.pathname + location.search + (/&prueba\b/.test(location.hash) ? "#prueba" : ""));
   const a = SEReto.decode(m[1]);
   if(!a){ RETO = {broken:true}; return; }
   try{ localStorage.setItem(RETO_KEY, m[1]); }catch(e){}
