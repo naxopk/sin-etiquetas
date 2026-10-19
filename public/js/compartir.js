@@ -372,7 +372,7 @@ async function drawQuiz(canvas, data, opts){
   ctx.fillStyle = "#FFFFFF"; rrect(ctx, cx, cy, cw, chh, 48); ctx.fill(); ctx.lineWidth = 5; ctx.strokeStyle = INK; ctx.stroke();
   const pad = sq ? 56 : 70, x0 = cx + pad;
   let y = cy + pad + 26;
-  eyebrow(ctx, "9 propuestas reales sin firma", x0, y, sq ? 22 : 26);
+  eyebrow(ctx, "¿Quién sabe más de política?", x0, y, sq ? 22 : 26);
   y += sq ? 96 : 130;
   font(ctx, 800, sq ? 92 : 128, "", -0.055); ctx.fillStyle = INK; ctx.textAlign = "left"; ctx.fillText("¿De quién es?", x0 - 4, y);
   const big = sq ? 290 : 400;

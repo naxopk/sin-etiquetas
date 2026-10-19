@@ -158,7 +158,6 @@ function renderIntro(){
     </div>
     <p class="small muted">Unos 15 minutos · sin registrarte · tus respuestas no salen de tu navegador</p>
   </section>
-  ${prog ? "" : `<div class="juego-cta"><div><h3>¿Poco tiempo? Juega a «¿De quién es?»</h3><p>Nueve propuestas reales sin firma, en 2 minutos. Después puedes volver aquí.</p></div><a class="btn ghost" href="/juego/">Jugar</a></div>`}
   <section class="section">
     <h2>El recorrido</h2>
     <p class="sub">Cuatro pasos. Puedes volver atrás en cualquier momento y repasar todo antes del resultado.</p>

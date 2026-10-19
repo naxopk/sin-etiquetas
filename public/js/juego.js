@@ -29,9 +29,9 @@ function intro(){
   app.innerHTML = `
   <section class="hero hero-card tone-pink rays juego-hero">
     <img class="stk test-runner" src="/img/ilus/magnifier.webp" alt="" width="640" height="640">
-    <p class="eyebrow">Juego · 2 minutos · 9 propuestas</p>
+    <p class="eyebrow">¿Quién sabe más de política? · 2 minutos</p>
     <h1>¿De quién es?</h1>
-    <p class="lede">Nueve medidas reales, sacadas de programas electorales y de decisiones de gobierno, sin firma. Di de qué lado crees que viene cada una. Al final, tu nota.</p>
+    <p class="lede">Nueve medidas reales, sacadas de programas electorales y de decisiones de gobierno, sin firma. Di de qué lado crees que viene cada una. Al final, tu nota, para retar a quien quieras.</p>
     <div class="row"><button class="btn" id="go">Empezar</button><a class="btn link" href="/test/">Prefiero hacer el test completo</a></div>
     <p class="small muted">No se envía nada y no cuenta para la muestra.</p>
   </section>
@@ -66,7 +66,7 @@ function verdict(s){
   if(s >= 3) return "Sin la firma, cuesta más de lo que parece.";
   return "Sin siglas, las ideas se parecen más de lo que creemos.";
 }
-function shareText(s){ return `En «¿De quién es?» he acertado ${s} de 9 propuestas reales sin firma. ¿Me superas? Son 2 minutos:`; }
+function shareText(s){ return `¿Quién sabe más de política? En «¿De quién es?» he acertado ${s} de 9 propuestas reales sin firma. ¿Me superas? Son 2 minutos:`; }
 function end(){
   const s = score();
   app.innerHTML = `
@@ -77,9 +77,9 @@ function end(){
     <div class="sharecard" id="jCard" data-fmt="${cardOpts.format}">
       <div class="sharecard-prev"><img id="jPrev" alt="Vista previa de la tarjeta «¿Me superas?»" hidden></div>
       <div class="sharecard-body">
-        <p class="eyebrow">Reta a alguien</p>
-        <h2>¿Me superas?</h2>
-        <p class="small muted">Una tarjeta con tu nota para tus historias o para WhatsApp. No dice qué piensas.</p>
+        <p class="eyebrow">¿Quién sabe más de política?</p>
+        <h2>Reta a tus amigos: ¿te superan?</h2>
+        <p class="small muted">Una tarjeta con tu nota para tus historias, o el enlace por WhatsApp. No dice qué piensas, solo cuántas has acertado.</p>
         <div class="seg" role="group" aria-label="Formato">${Object.entries(SEShare.FORMATS).map(([id,f])=>`<button class="chip" data-fmt="${id}" aria-pressed="${id===cardOpts.format}">${f.label}</button>`).join("")}</div>
         <div class="swatches" role="group" aria-label="Color de fondo">${Object.entries(SEShare.TONES).map(([id,t])=>`<button class="sw" data-tone="${id}" style="--sw:${t.bg}" aria-pressed="${id===cardOpts.tone}" aria-label="${t.label}" title="${t.label}"></button>`).join("")}</div>
         <div class="row"><button class="btn" id="jShare" hidden>Compartir tarjeta</button><button class="btn ghost" id="jSave">Descargar tarjeta</button><a class="btn ghost" id="jWa" href="https://wa.me/?text=${encodeURIComponent(shareText(s)+" "+SITE+"/juego/")}" target="_blank" rel="noopener">WhatsApp</a></div>
