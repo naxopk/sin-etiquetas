@@ -832,12 +832,21 @@ function pasaloHtml(){
       <button class="btn ghost" id="paIg" type="button">${IG_SVG}Instagram</button>
       <button class="btn ghost" id="paCopy" type="button">${LINK_SVG}Copiar el enlace</button>
     </div>
+    <p class="pasalo-region" id="paRegion" hidden></p>
     <p class="small" id="paMsg" aria-live="polite"></p>
     <p class="small muted pasalo-note">El mensaje no dice nada de tu resultado: solo invita a hacer el test.</p>
   </section>`;
 }
 function bindPasalo(){
   const msg = document.getElementById("paMsg"); if(!msg) return;
+  // «A Galicia le faltan 61 respuestas para que cuente»: la comunidad de quien hace el test, desde /api/stats
+  const reg = document.getElementById("paRegion");
+  if(window.SEMuestra && S.region && S.region!=="ND") SEMuestra.load().then(d=>{
+    const r = d && d.rows.find(x=>x.id===S.region);
+    if(!r || !document.body.contains(reg)) return;
+    reg.innerHTML = `${SEMuestra.sentence(r)} ${r.done ? "" : "Pásaselo a alguien de allí."} <a href="/#muestra">Ver el mapa</a>`;
+    reg.hidden = false;
+  });
   const say = t => { msg.textContent = t; };
   // Sin permiso para el portapapeles: el enlace queda seleccionado en un campo para copiarlo a mano
   const manual = ()=>{
