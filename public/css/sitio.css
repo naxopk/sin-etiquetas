@@ -1311,3 +1311,5 @@ button,a,label,select,input,textarea,summary,[role="button"],.chip,.btn,.stepper
 .expres-next h2{font-size:clamp(1.5rem,4vw,2.1rem)}
 .expres-next p{color:var(--ink-2);max-width:62ch}
 .expres-next .eyebrow{color:#111;font-weight:800}
+.hero-live{margin-top:-6px}
+.hero-live a{color:var(--ink);font-weight:600}
