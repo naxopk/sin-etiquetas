@@ -379,6 +379,7 @@ function renderReview(){
   document.getElementById("next").onclick=()=>{ if(nAns<8) return; go(S.completed ? "results" : "blindintro"); };
 }
 
+function playedGame(){ try{ const g = JSON.parse(localStorage.getItem("sinetiquetas-29n-juego")); return !!(g && g.done); }catch(e){ return false; } }
 function renderBlindIntro(){
   app.innerHTML = `
   <section class="sheet pause">
@@ -386,6 +387,7 @@ function renderBlindIntro(){
     <h2>¿Y si no supieras quién lo propone?</h2>
     <p class="muted">Ahora verás ${BLIND.length} medidas reales, sacadas de programas electorales o de decisiones de gobierno. Algunas son de partidos que te gustan y otras de partidos que no. No te diremos cuál es cuál hasta el final.</p>
     <p class="muted">No cuentan para la puntuación. Sirven para comprobar si juzgas igual una idea cuando no ves la firma. Responde rápido, con lo primero que pienses.</p>
+    ${playedGame() ? `<p class="notice"><b>Ya las conoces del juego «¿De quién es?».</b> Puedes valorarlas igual, pensando solo en la medida, o saltar este bloque: no cambia tu resultado.</p>` : ""}
     <div class="row"><button class="btn" id="go">Empezar</button><button class="btn link" id="skipAll">Saltar este bloque</button></div>
   </section>
   <div class="qnav"><button class="btn link" id="back">← Volver al repaso</button></div>`;
