@@ -31,7 +31,10 @@ module.exports = async (req, res) => {
     );
     if (!inserted.length) return send(res, 409, { error: "Ya se enviaron respuestas desde este navegador." });
 
-    return send(res, 201, { receipt: row.leaf, rid: row.rid, day: row.day, counted: row.flags.length === 0, flags: row.flags });
+    // Número de participante (todas las respuestas recibidas hasta esta). La pegatina lo enseña redondeado: el número
+    // exacto, junto con el orden de los datos abiertos, permitiría encontrar la fila y leer las respuestas.
+    const pos = await d.query("select count(*)::int as n from responses where id <= $1", [inserted[0].id]);
+    return send(res, 201, { receipt: row.leaf, rid: row.rid, day: row.day, counted: row.flags.length === 0, flags: row.flags, n: pos[0].n });
   } catch (e) {
     if (e.status === 400) return send(res, 400, { error: e.message });
     console.error("submit", e);

@@ -259,9 +259,103 @@ async function draw(canvas, data, opts){
   return canvas;
 }
 
+/* ---------- Pegatina «He votado sin etiquetas» ----------
+   No lleva nada de lo que piensa la persona: solo que ha participado, su número redondeado
+   («entre las primeras 150») y una huella dibujada a partir del recibo y de una clave que solo está en su navegador.
+   data: {first: 150, code: "7F3A·91C2", bytes: Uint8Array(32)} */
+/* huella: anillos concéntricos cortados según los bytes, como una huella dactilar */
+function fingerprint(ctx, cx, cy, R, bytes, s){
+  ctx.save();
+  ctx.strokeStyle = INK; ctx.lineCap = "round"; ctx.lineWidth = R*0.055;
+  for(let i = 0; i < 7; i++){
+    const r = R*(0.16 + i*0.135), b0 = bytes[i*4], b1 = bytes[i*4+1], b2 = bytes[i*4+2], b3 = bytes[i*4+3];
+    const gaps = 1 + b1 % 3, start = b0/255*Math.PI*2, seg = Math.PI*2/gaps;
+    for(let g = 0; g < gaps; g++){
+      const gap = 0.28 + ((g ? b3 : b2) % 40)/100;
+      const a0 = start + g*seg + gap/2, a1 = start + (g+1)*seg - gap/2;
+      ctx.beginPath(); ctx.arc(cx, cy, r, a0, a1); ctx.stroke();
+    }
+  }
+  ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(cx, cy, R*0.06, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+function stickerCard(ctx, d, x, y, w, h, k, tone, sq){
+  ctx.save();
+  ctx.translate(x + w/2, y + h/2); ctx.rotate(-1.5*Math.PI/180); ctx.translate(-w/2, -h/2);
+  ctx.fillStyle = INK; rrect(ctx, 0, 16*k, w, h, 56*k); ctx.fill();
+  ctx.fillStyle = "#FFFFFF"; rrect(ctx, 0, 0, w, h, 56*k); ctx.fill();
+  ctx.lineWidth = 6*k; ctx.strokeStyle = INK; ctx.stroke();
+  const pad = 64*k, inner = w - pad*2;
+  let cy = pad + 30*k;
+  eyebrow(ctx, "Generales · 29 de noviembre de 2026", pad, cy, 26*k);
+  // «He votado / sin etiquetas», con rotulador del color del fondo detrás de «sin etiquetas»
+  const big = fit(ctx, "sin etiquetas", inner, 800, (sq ? 120 : 150)*k, 80*k, "", -0.055);
+  cy += big*1.05;
+  ctx.fillStyle = INK; ctx.textAlign = "left"; ctx.fillText("He votado", pad - 4*k, cy);
+  cy += big*1.0;
+  const wb = ctx.measureText("sin etiquetas").width;
+  ctx.fillStyle = tone.bg; rrect(ctx, pad - big*0.1, cy - big*0.74, wb + big*0.2, big*0.88, big*0.12); ctx.fill();
+  ctx.fillStyle = INK; ctx.fillText("sin etiquetas", pad - 4*k, cy);
+  cy += (sq ? 66 : 84)*k;
+  hand(ctx, "en el test, sin ver siglas", pad, cy, (sq ? 46 : 56)*k, -2);
+  // huella y número
+  const R = (sq ? 118 : 150)*k;
+  const fy = cy + (sq ? 40 : 56)*k + R, fx = sq ? pad + R : w/2;
+  ctx.fillStyle = tone.ray; ctx.beginPath(); ctx.arc(fx, fy, R*1.08, 0, Math.PI*2); ctx.fill();
+  fingerprint(ctx, fx, fy, R, d.bytes, k);
+  if(!sq){
+    font(ctx, 700, 28*k, "", 0.08); ctx.fillStyle = "rgba(17,17,17,.62)"; ctx.textAlign = "center";
+    ctx.fillText("MI HUELLA · " + d.code, w/2, fy + R + 56*k);
+    cy = fy + R + 124*k;
+    ctx.fillStyle = "rgba(17,17,17,.15)"; ctx.fillRect(pad, cy - 40*k, inner, 3*k);
+    font(ctx, 600, 40*k, "", -0.02); ctx.fillStyle = INK; ctx.textAlign = "left";
+    ctx.fillText("Entre las primeras", pad, cy + 20*k);
+    const pn = fmt(d.first) + " personas";
+    fit(ctx, pn, inner, 800, 116*k, 70*k, "", -0.05); ctx.fillText(pn, pad - 4*k, cy + 128*k);
+  } else {
+    const tx = pad + R*2 + 48*k, tw = w - tx - pad;
+    font(ctx, 600, 34*k, "", -0.02); ctx.fillStyle = INK; ctx.textAlign = "left";
+    ctx.fillText("Entre las", tx, fy - 54*k); ctx.fillText("primeras", tx, fy - 14*k);
+    const pn = fmt(d.first);
+    fit(ctx, pn, tw, 800, 110*k, 60*k, "", -0.05); ctx.fillText(pn, tx - 4*k, fy + 84*k);
+    font(ctx, 600, 34*k, "", -0.02); ctx.fillText("personas", tx, fy + 128*k);
+    font(ctx, 700, 22*k, "", 0.08); ctx.fillStyle = "rgba(17,17,17,.62)";
+    ctx.fillText("MI HUELLA · " + d.code, pad, fy + R + 56*k);
+  }
+  ctx.restore();
+}
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+async function drawSticker(canvas, data, opts){
+  const fmtD = FORMATS[opts.format] || FORMATS.story, tone = TONES[opts.tone] || TONES.sky;
+  const [urna] = await Promise.all([loadImg("urna"), loadFonts()]);
+  const W = fmtD.w, H = fmtD.h, sq = opts.format === "square", k = 1;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = tone.bg; ctx.fillRect(0, 0, W, H);
+  rays(ctx, W/2, H*0.5, Math.hypot(W, H), tone.ray);
+  if(!sq){
+    const M = 80;
+    wordmark(ctx, M, 172, 58);
+    pill(ctx, "GENERALES · 29N", W - M, 222, 26, {ls:0.12, right:true});
+    // Igual que la imagen del resultado: lo importante, entre y≈170 y y≈1690 (fuera de las barras de Instagram)
+    stickerCard(ctx, data, 70, 340, W - 140, 1160, k, tone, false);
+    sticker(ctx, urna, 770, 280, 230, 10, 1);
+    hand(ctx, "No dice qué pienso: solo que he participado.", M + 2, 1588, 48, -2);
+    pill(ctx, "votasinetiquetas.es · ¿Y tú?", M, 1660, 42, {shadow:true});
+  } else {
+    const M = 60;
+    wordmark(ctx, M, 52, 42);
+    pill(ctx, "GENERALES · 29N", W - M, 88, 20, {ls:0.12, right:true});
+    stickerCard(ctx, data, 46, 160, W - 92, 800, k, tone, true);
+    sticker(ctx, urna, 860, 112, 160, 10, 1);
+    pill(ctx, "votasinetiquetas.es · ¿Y tú?", W - M, 1030, 30, {shadow:true, right:true});
+  }
+  return canvas;
+}
+
 function toBlob(canvas){
   return new Promise((res, rej)=> canvas.toBlob(b=> b ? res(b) : rej(new Error("toBlob")), "image/png"));
 }
 
-root.SEShare = {TONES, FORMATS, draw, toBlob};
+root.SEShare = {TONES, FORMATS, draw, drawSticker, toBlob};
 })(window);
