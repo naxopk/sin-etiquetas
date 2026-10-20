@@ -37,6 +37,7 @@ api/               funciones de la API (sirven igual en el VPS y en Vercel)
   dataset.js       datos abiertos de los días sellados
   config.js        configuración pública
   github.js        enlace y estrellas del repositorio (consulta GitHub una vez por hora)
+  origen.js        de dónde llega la gente (Instagram…): solo totales por día, aparte de las respuestas
   cron/seal.js     sellado nocturno (Vercel)
 lib/               lógica del servidor (validación, antifraude, sellos, ponderación, estadísticas)
 db/schema.sql      tablas y bloqueo de cambios
@@ -114,6 +115,20 @@ node scripts/build-demo.js                    # demo/: versión estática con da
 ```
 
 `npm run seed` se niega a ejecutarse contra una base de datos que no sea local.
+
+## De dónde llega la gente
+
+Para saber cuántas personas llegan desde Instagram (o TikTok, X…) y cuántas acaban enviando, sin analítica ni cookies:
+
+- Pon en el perfil un enlace con origen: `https://votasinetiquetas.es/?utm_source=instagram&utm_medium=bio`. Para una tanda de reels, cambia la campaña: `&utm_campaign=reels-octubre`.
+- Sin parámetros, la web reconoce el navegador integrado de Instagram, Facebook y TikTok (campaña `sin-utm`) y la página de la que vienes.
+- El navegador recuerda el origen 30 días y avisa una vez al día (`visits`). Si la persona envía, el servidor suma uno a `submissions` de ese origen; los envíos sin origen cuentan como `directo`. Todo va a la tabla `source_counts`, por día: el origen nunca se guarda con la respuesta ni se publica.
+
+Para ver los totales (por defecto, los últimos 30 días):
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" "https://votasinetiquetas.es/api/origen?desde=2026-10-20"
+```
 
 ## Cómo se evita el fraude
 

@@ -6,3 +6,5 @@ revoke all on responses, seals, rate_hits from se_app;
 grant select, insert on responses, seals to se_app;
 grant select, insert, delete on rate_hits to se_app;
 grant usage, select on sequence responses_id_seq to se_app;
+revoke all on source_counts from se_app;
+grant select, insert, update on source_counts to se_app;

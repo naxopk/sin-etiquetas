@@ -56,3 +56,15 @@ create trigger responses_inmutable before update or delete on responses
 drop trigger if exists seals_inmutable on seals;
 create trigger seals_inmutable before update or delete on seals
   for each row execute function sin_etiquetas_inmutable();
+
+-- De dónde llega la gente (Instagram, TikTok…): solo totales por día, nunca unidos a una respuesta.
+-- «visits»: navegadores que llegan con un origen conocido (una vez al día cada uno).
+-- «submissions»: envíos aceptados, contados en el servidor; los que no traen origen van como «directo».
+create table if not exists source_counts (
+  day          date not null,
+  source       text not null,
+  campaign     text not null default '',
+  visits       integer not null default 0,
+  submissions  integer not null default 0,
+  primary key (day, source, campaign)
+);

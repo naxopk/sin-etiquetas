@@ -654,7 +654,7 @@ function renderResults(){
   renderShareImage(R);
   watchFinish();
   document.getElementById("seeParties").onclick=()=>setView("partidos");
-  document.getElementById("wipe").onclick=()=>{ try{ localStorage.removeItem(KEY); }catch(e){} S=fresh(); go("intro"); };
+  document.getElementById("wipe").onclick=()=>{ try{ localStorage.removeItem(KEY); localStorage.removeItem("sinetiquetas-origen"); }catch(e){} S=fresh(); go("intro"); };
 }
 
 function tensions(ans){
@@ -828,6 +828,9 @@ function renderDonate(){
     const payload={ consent:true, clientId:S.clientId, region:S.region||"ND", answers:S.answers, points:S.points, blind:S.blind,
       prediction:S.prediction||null, durationS:S.durS, token:tsToken,
       age:document.getElementById("dAge").value||null, sex:document.getElementById("dSex").value||null, vote23:document.getElementById("dVote").value||null };
+    // De dónde llegaste (Instagram…): el servidor lo suma a un total aparte y no lo guarda con tus respuestas
+    const origin=window.seOrigen && window.seOrigen();
+    if(origin){ payload.source=origin.source; payload.campaign=origin.campaign; }
     try{
       const r=await fetch("/api/submit",{method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)});
       const j=await r.json().catch(()=>({}));
