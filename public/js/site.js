@@ -53,6 +53,58 @@
       "</div>";
   }
 
+  /* Origen de la visita (Instagram, TikTok…): solo sirve para sumar totales por día y origen.
+     Se guarda en este navegador 30 días y, si envías tus respuestas, se suma aparte: nunca va junto a ellas. */
+  var ORIGIN_KEY = "sinetiquetas-origen", ORIGIN_DAYS = 30;
+  var REFS = [[/(^|\.)instagram\.com$/, "instagram"], [/(^|\.)facebook\.com$/, "facebook"], [/^(t\.co|(.+\.)?x\.com|(.+\.)?twitter\.com)$/, "x"],
+    [/(^|\.)tiktok\.com$/, "tiktok"], [/(^|\.)threads\.(net|com)$/, "threads"], [/(^|\.)(youtube\.com|youtu\.be)$/, "youtube"],
+    [/(^|\.)(linkedin\.com|lnkd\.in)$/, "linkedin"], [/(^|\.)reddit\.com$/, "reddit"], [/(^|\.)bsky\.app$/, "bluesky"],
+    [/(^|\.)(t\.me|telegram\.org)$/, "telegram"], [/(^|\.)whatsapp\.com$/, "whatsapp"],
+    [/(^|\.)(google\.[a-z.]+|bing\.com|duckduckgo\.com|ecosia\.org)$/, "buscador"]];
+  function readOrigin() {
+    try {
+      var o = JSON.parse(localStorage.getItem(ORIGIN_KEY));
+      if (o && o.s && Date.now() - o.t < ORIGIN_DAYS * 86400000) return o;
+    } catch (e) {}
+    return null;
+  }
+  window.seOrigen = function () { var o = readOrigin(); return o ? { source: o.s, campaign: o.c } : null; };
+  (function () {
+    var q, src = "", camp = "";
+    try { q = new URLSearchParams(location.search); } catch (e) { return; }
+    src = (q.get("utm_source") || "").slice(0, 40);
+    if (src) camp = (q.get("utm_campaign") || q.get("utm_medium") || "").slice(0, 60);
+    else {
+      // Sin parámetros: el navegador integrado de la app lo delata, o la página de la que vienes
+      var ua = navigator.userAgent || "";
+      if (/Instagram/i.test(ua)) src = "instagram";
+      else if (/FBAN|FBAV|FB_IAB/.test(ua)) src = "facebook";
+      else if (/musical_ly|BytedanceWebview|TikTok/i.test(ua)) src = "tiktok";
+      else {
+        var host = "";
+        try { host = document.referrer ? new URL(document.referrer).hostname : ""; } catch (e) {}
+        if (host && host !== location.hostname) for (var i = 0; i < REFS.length; i++) if (REFS[i][0].test(host)) { src = REFS[i][1]; break; }
+      }
+      if (src) camp = "sin-utm";
+    }
+    // Quita los utm_ de la dirección: si alguien copia el enlace para compartirlo, no se lleva el origen
+    if (q.get("utm_source") || q.get("utm_medium") || q.get("utm_campaign")) {
+      ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach(function (k) { q.delete(k); });
+      try { history.replaceState(history.state, "", location.pathname + (q.toString() ? "?" + q : "") + location.hash); } catch (e) {}
+    }
+    if (!src) return;
+    var prev = readOrigin();
+    if (camp === "sin-utm" && prev && prev.s === src) camp = prev.c; // misma app al cambiar de página: conserva la campaña del enlace
+    var today = new Date().toISOString().slice(0, 10), mark = today + "|" + src + "|" + camp;
+    if (prev && prev.v === mark) return; // ya contada hoy
+    try { localStorage.setItem(ORIGIN_KEY, JSON.stringify({ s: src, c: camp, t: Date.now(), v: mark })); } catch (e) { return; }
+    var body = JSON.stringify({ source: src, campaign: camp });
+    try {
+      if (!(navigator.sendBeacon && navigator.sendBeacon("/api/origen", new Blob([body], { type: "application/json" }))))
+        fetch("/api/origen", { method: "POST", headers: { "Content-Type": "application/json" }, body: body, keepalive: true }).catch(function () {});
+    } catch (e) {}
+  })();
+
   function fmt(n) { return n >= 1000 ? (n / 1000).toLocaleString("es-ES", { maximumFractionDigits: 1 }) + " k" : String(n); }
   fetch("/api/github").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
     if (!j || !j.url) return;

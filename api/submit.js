@@ -4,6 +4,7 @@ const { db, hasDatabase } = require("../lib/db");
 const { buildRow } = require("../lib/submission");
 const { verifyTurnstile, clientIp, overRateLimit } = require("../lib/guard");
 const { send, readBody } = require("../lib/http");
+const { countSource } = require("../lib/origen");
 
 const COLS = ["rid", "client_id", "hour", "day", "data_version", "region", "age", "sex", "vote23", "answers", "stars",
   "points", "blind", "prediction", "top", "affinity", "duration_s", "flags", "leaf"];
@@ -30,6 +31,9 @@ module.exports = async (req, res) => {
       COLS.map((c) => row[c])
     );
     if (!inserted.length) return send(res, 409, { error: "Ya se enviaron respuestas desde este navegador." });
+
+    // Suma uno al origen (Instagram, directo…) en una tabla aparte: no se guarda con la respuesta
+    await countSource(d, "submissions", body.source, body.campaign).catch((e) => console.error("origen", e));
 
     return send(res, 201, { receipt: row.leaf, rid: row.rid, day: row.day, counted: row.flags.length === 0, flags: row.flags });
   } catch (e) {

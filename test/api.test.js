@@ -90,3 +90,43 @@ test("flujo completo: envío, duplicado, límite, sello, recibo, datos y estadí
   assert.ok(st.body.parties === null || st.body.parties.length === 12);
   assert.match(st.headers["cache-control"], /s-maxage=30/);
 });
+
+test("origen: visitas y envíos por origen, en una tabla aparte de las respuestas", async () => {
+  await migrate();
+  const origen = require("../api/origen"), submit = require("../api/submit");
+  const { normalizeSource, normalizeCampaign, countSource, MAX_CAMPAIGNS_PER_DAY } = require("../lib/origen");
+  const d = await db();
+
+  assert.equal(normalizeSource("IG"), "instagram");
+  assert.equal(normalizeSource("Twitter"), "x");
+  assert.equal(normalizeSource("loquesea"), "otro");
+  assert.equal(normalizeSource(undefined), "directo");
+  assert.equal(normalizeCampaign(" Bio Reels!! "), "bio-reels");
+
+  assert.equal((await call(origen, { method: "POST", body: { source: "instagram", campaign: "bio" } })).status, 200);
+  assert.equal((await call(origen, { method: "POST", body: { source: "instagram", campaign: "bio" } })).status, 200);
+  assert.equal((await call(origen, { method: "POST", body: {} })).status, 400);
+
+  const ip = { "x-forwarded-for": "10.0.1.1" };
+  assert.equal((await call(submit, { method: "POST", body: payload(50, { source: "instagram", campaign: "bio" }), headers: ip })).status, 201);
+  assert.equal((await call(submit, { method: "POST", body: payload(51), headers: ip })).status, 201);
+
+  // Sin clave no se pueden leer los totales
+  assert.equal((await call(origen, { headers: { authorization: "Bearer mal" } })).status, 401);
+  const rep = await call(origen, { headers: { authorization: "Bearer secreto-de-prueba" } });
+  assert.equal(rep.status, 200);
+  const row = (s, c) => rep.body.totals.find((r) => r.source === s && r.campaign === c);
+  assert.deepEqual([row("instagram", "bio").visits, row("instagram", "bio").submissions], [2, 1]);
+  assert.equal(row("directo", "").submissions, 4, "los envíos sin origen cuentan como directos (3 de la prueba anterior y 1 de esta)");
+
+  // El origen nunca se guarda con la respuesta
+  const cols = await d.query("select column_name from information_schema.columns where table_name = 'responses'");
+  assert.ok(!cols.some((c) => /source|campaign|origen/.test(c.column_name)));
+
+  // Muchas campañas distintas en un día se juntan en «otra»
+  for (let i = 0; i < MAX_CAMPAIGNS_PER_DAY + 3; i++) await countSource(d, "visits", "tiktok", `c${i}`);
+  const [n] = await d.query("select count(*)::int as n from source_counts where campaign <> ''");
+  assert.ok(n.n <= MAX_CAMPAIGNS_PER_DAY + 1);
+  const [otra] = await d.query("select visits from source_counts where campaign = 'otra'");
+  assert.ok(otra.visits >= 3);
+});
